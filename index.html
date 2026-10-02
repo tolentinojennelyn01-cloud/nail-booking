@@ -69,6 +69,9 @@ textarea{min-height:76px;resize:vertical}
 .hint{font-weight:300;font-size:.95rem;margin-bottom:12px}.edate{font-family:var(--display);font-size:1.2rem;color:var(--berry);margin-bottom:4px}#json{min-height:130px;font:13px monospace}.slot.x[aria-pressed=true]{background:#ddd;text-decoration:line-through;border-color:#ccc;color:#777;font-weight:400}
 #owner canvas{width:100%;max-width:320px;display:block;margin:14px auto 0;border-radius:14px;box-shadow:0 10px 26px -14px #000}
 [hidden]{display:none!important}
+#eSlots{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px}
+#eSlots .slot{text-align:center;padding:14px 6px}
+details{margin-top:18px}summary{cursor:pointer;font-weight:500;color:var(--berry);padding:8px 0}
 :focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .spark{display:inline-block;color:var(--gold);animation:tw 3.2s ease-in-out infinite}
 @keyframes tw{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.35) rotate(20deg)}}
@@ -103,13 +106,15 @@ textarea{min-height:76px;resize:vertical}
       <input id="eNote" placeholder="Out of town, day off, family event…">
       <button class="cta" id="eOff">Mark as not available</button>
       <button class="cta alt" id="eOn" hidden>Mark as available again</button>
-      <label>Tap a time to mark it booked (a receipt opens below)</label>
+      <label>Tap a time to cross it out. Booked times drop to the end.</label>
       <div class="slots" id="eSlots"></div>
     </div>
+    <details><summary>Backup my schedule</summary>
     <label for="json">Your schedule</label>
     <textarea id="json" readonly></textarea>
     <button class="cta alt" id="copyJson">Copy schedule</button>
     <p class="note" style="text-align:left">Your schedule saves automatically on this device. Use <b>Copy schedule</b> as a backup (paste it somewhere safe, like Notes).</p>
+    </details>
   </section>
 
   <section id="s3" hidden>
@@ -135,7 +140,6 @@ textarea{min-height:76px;resize:vertical}
     <p style="font-weight:300;font-size:.95rem">Makes an image of your open times to post on Instagram.</p>
     <button class="cta" id="dlStory">Download for Story (1080×1920)</button>
     <button class="cta alt" id="dlPost">Download for Post (1080×1350)</button>
-    <button class="cta alt" id="dlBooked">Download booked days (Story)</button>
     <canvas id="prevCanvas" hidden></canvas>
   </section>
 </div>
@@ -238,7 +242,8 @@ async function makeCard(W,H,maxDays,mode){
   x.fillText(mode==="booked"?"already booked":"available this week",W/2,H>1500?285:240);
   const days=[]; for(let d=new Date(today);d<=last&&days.length<maxDays;d.setDate(d.getDate()+1)){
     const dt=new Date(d); if(mode==="booked"){if((CONFIG.booked[key(dt)]||[]).length)days.push([dt,CONFIG.hours]);continue}
-    if(offNote(dt))continue; const s=openSlots(dt); if(s.length)days.push([dt,s])}
+    if(offNote(dt))continue; const bkd=CONFIG.booked[key(dt)]||[];
+    days.push([dt,[...CONFIG.hours.filter(h=>!bkd.includes(h)),...CONFIG.hours.filter(h=>bkd.includes(h))]])}
   let y=H>1500?400:330; const m=90, bottom=H-170, step=(bottom-y)/Math.max(days.length,1);
   x.textAlign="left";
   days.forEach(([dt,s])=>{
@@ -247,10 +252,10 @@ async function makeCard(W,H,maxDays,mode){
     let cx=m, cy=y+22; x.font="400 27px Jost,Arial,sans-serif";
     s.forEach(h=>{const w=x.measureText(h).width+36;
       if(cx+w>W-m){cx=m;cy+=58}
-      const bk=mode==="booked"&&(CONFIG.booked[key(dt)]||[]).includes(h);
-      x.fillStyle=mode==="booked"?(bk?"#6b1f45":"#e3cfd6"):"#6b1f45"; x.beginPath(); x.roundRect(cx,cy,w,46,23); x.fill();
-      x.fillStyle=mode==="booked"&&!bk?"#8a6a78":"#fffaf7"; x.fillText(h,cx+18,cy+32);
-      if(mode==="booked"&&!bk){x.fillRect(cx+18,cy+23,w-36,2)} cx+=w+12});
+      const bk=(CONFIG.booked[key(dt)]||[]).includes(h);
+      x.fillStyle=bk?"#e3cfd6":"#6b1f45"; x.beginPath(); x.roundRect(cx,cy,w,46,23); x.fill();
+      x.fillStyle=bk?"#8a6a78":"#fffaf7"; x.fillText(h,cx+18,cy+32);
+      if(bk){x.fillRect(cx+16,cy+22,w-32,3)} cx+=w+12});
     y+=Math.min(step,230);
   });
   if(!days.length){x.textAlign="center";x.fillStyle="#6b1f45";x.font="500 50px 'Bodoni Moda',serif";x.fillText(mode==="booked"?"No bookings yet":"Fully booked for now 💕",W/2,H/2)}
@@ -264,7 +269,6 @@ async function download(W,H,n,name,mode){
 }
 $("dlStory").onclick=()=>download(1080,1920,6,"availability-story.png");
 $("dlPost").onclick=()=>download(1080,1350,5,"availability-post.png");
-$("dlBooked").onclick=()=>download(1080,1920,6,"booked-days-story.png","booked");
 /* ---------- Save the calendar as a picture ---------- */
 async function monthCard(){
   await Promise.all([document.fonts.load("500 60px 'Bodoni Moda'"),document.fonts.load("italic 500 40px 'Bodoni Moda'"),document.fonts.load("400 30px Jost")]);
@@ -354,10 +358,10 @@ function openEdit(quiet){
   $("eDay").hidden=false; $("eDate").textContent=nice(); $("eNote").value=isOff?CONFIG.offDays[k]:"";
   $("eOff").textContent=isOff?"Update note":"Mark as not available"; $("eOn").hidden=!isOff;
   const w=$("eSlots"); w.innerHTML="";
-  CONFIG.hours.forEach(h=>{const b=document.createElement("button"); b.className="slot x"; b.textContent=h;
+  [...CONFIG.hours.filter(h=>!(CONFIG.booked[k]||[]).includes(h)),...CONFIG.hours.filter(h=>(CONFIG.booked[k]||[]).includes(h))].forEach(h=>{const b=document.createElement("button"); b.className="slot x"; b.textContent=h;
     b.setAttribute("aria-pressed",(CONFIG.booked[k]||[]).includes(h));
     b.onclick=()=>{const a=CONFIG.booked[k]=CONFIG.booked[k]||[],i=a.indexOf(h);
-      if(i<0){a.push(h);time=h;saveEdit();$("s4").hidden=false;update();$("s4").scrollIntoView({behavior:"smooth",block:"start"})}else{a.splice(i,1);saveEdit()}};
+      if(i<0){a.push(h);time=h;saveEdit();$("s4").hidden=false;update()}else{a.splice(i,1);saveEdit();$("s4").hidden=true}};
     w.append(b)});
   if(!quiet)$("edit").scrollIntoView({behavior:"smooth",block:"start"});
 }
