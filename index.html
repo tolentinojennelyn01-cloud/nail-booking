@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book Nails by Jen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,500;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--blush:#fbe6ea;--rose:#f3b9c6;--berry:#6b1f45;--plum:#3a0f2a;--gold:#c9a063;--pearl:#fffaf7;--ink:#3a0f2a;
+--display:'Bodoni Moda',Georgia,serif;--body:'Jost','Helvetica Neue',Arial,sans-serif}
+*{box-sizing:border-box;margin:0}
+body{font-family:var(--body);color:var(--ink);line-height:1.5;min-height:100vh;background:radial-gradient(circle at 12% 8%,#fff 0,transparent 35%),radial-gradient(circle at 90% 30%,var(--rose) 0,transparent 40%),var(--blush)}
+.wrap{max-width:760px;margin:0 auto;padding:48px 20px 70px}
+header{text-align:center;margin-bottom:34px}
+h1{font-family:var(--display);font-weight:500;font-size:clamp(2.8rem,10vw,4.8rem);line-height:1;color:var(--berry)}
+h1 em{display:block;font-size:.5em;color:var(--gold);margin-top:.3em}
+header p{margin:14px 0;font-weight:300;font-size:1.05rem}
+.ig{display:inline-block;padding:9px 20px;border-radius:999px;border:1.5px solid var(--berry);color:var(--berry);text-decoration:none;font-weight:500;transition:.2s}
+.ig:hover{background:var(--berry);color:var(--pearl)}
+h2{font-family:var(--display);font-weight:500;font-size:1.6rem;color:var(--berry);margin:0 0 14px}
+section{background:rgba(255,250,247,.78);backdrop-filter:blur(6px);border:1px solid #fff;border-radius:28px;padding:26px;margin-bottom:20px;box-shadow:0 18px 40px -24px rgba(107,31,69,.45)}
+section[hidden]{display:none}
+.services{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.svc{all:unset;cursor:pointer;padding:16px;border-radius:20px;border:1.5px solid var(--rose);background:var(--pearl);transition:.2s}
+.svc b{display:block;font-weight:500}.svc span{font-size:.9rem;font-weight:300}
+.svc .p{color:var(--gold);font-weight:500;float:right}
+.svc[aria-pressed=true]{background:var(--berry);color:var(--pearl);border-color:var(--berry);box-shadow:0 10px 24px -10px var(--berry)}
+.svc[aria-pressed=true] .p{color:#ecd3a6}
+.mhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.mhead h2{margin:0}
+.nav{all:unset;cursor:pointer;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--rose);font-size:1.2rem}
+.nav:disabled{opacity:.3;cursor:default}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px 4px;text-align:center}
+.dow{font-size:.78rem;color:var(--berry);font-weight:500;padding-bottom:4px}
+.day{all:unset;cursor:pointer;justify-self:center;width:min(100%,46px);aspect-ratio:3/4;border-radius:50% 50% 46% 46%/62% 62% 38% 38%;display:grid;place-items:center;position:relative;background:linear-gradient(160deg,#fff 0,var(--blush) 55%,var(--rose) 100%);border:1px solid #fff;box-shadow:0 4px 10px -5px rgba(107,31,69,.5);transition:transform .15s}
+.day::before{content:"";position:absolute;top:9%;left:20%;width:22%;height:30%;border-radius:50%;background:rgba(255,255,255,.85);transform:rotate(18deg)}
+.day:hover:not(:disabled){transform:translateY(-3px)}
+.day:disabled{opacity:.28;cursor:default;box-shadow:none;background:#eee}
+.day.off{background:repeating-linear-gradient(135deg,#f1e4e8 0 5px,#fff 5px 10px);color:#8a6a78;box-shadow:none}
+.day.bk{box-shadow:0 0 0 2.5px var(--gold),0 4px 10px -5px rgba(107,31,69,.5)}
+.day.sel{background:linear-gradient(160deg,var(--rose),var(--berry));color:#fff;box-shadow:0 8px 18px -6px var(--berry),0 0 0 3px var(--gold)}
+.day.today{outline:2px dotted var(--gold);outline-offset:2px}
+.legend{font-size:.82rem;font-weight:300;margin-top:14px;text-align:center}
+.slots{display:flex;flex-wrap:wrap;gap:10px}
+.slot{all:unset;cursor:pointer;padding:10px 18px;border-radius:999px;border:1.5px solid var(--rose);background:var(--pearl)}
+.slot[aria-pressed=true]{background:var(--gold);border-color:var(--gold);color:var(--plum);font-weight:500}
+.slot:disabled{text-decoration:line-through;opacity:.4;cursor:default}
+.offmsg{padding:18px 20px;border-radius:20px;background:var(--blush);font-family:var(--display);font-size:1.15rem;color:var(--berry)}
+label{display:block;font-size:.9rem;margin:12px 0 4px}
+input,textarea{width:100%;font:inherit;padding:12px 16px;border-radius:16px;border:1.5px solid var(--rose);background:var(--pearl);color:var(--ink)}
+textarea{min-height:76px;resize:vertical}
+.sum{margin:22px 0 30px}
+.rc{position:relative;background:#fffdf9;padding:24px 22px 22px;box-shadow:0 12px 26px -16px rgba(107,31,69,.55);text-align:center}
+.rc::after{content:"";position:absolute;left:0;right:0;top:100%;height:8px;background:linear-gradient(135deg,#fffdf9 25%,transparent 25%) -7px 0,linear-gradient(225deg,#fffdf9 25%,transparent 25%) -7px 0;background-size:14px 14px}
+.rh{font-family:var(--display);font-size:1.6rem;color:var(--berry);line-height:1.1}
+.rs{font-size:.8rem;font-weight:300;letter-spacing:.12em;margin-top:4px}
+.rc hr{border:0;border-top:1.5px dashed var(--rose);margin:14px 0}
+.rr{display:flex;align-items:baseline;gap:8px;text-align:left;margin:8px 0;font-size:.95rem}
+.rr span{font-weight:300}
+.rr i{flex:1;border-bottom:1.5px dotted var(--rose);transform:translateY(-4px)}
+.rr b{font-weight:500;text-align:right;max-width:62%;overflow-wrap:anywhere}
+.rf{font-size:.82rem;font-weight:300;margin-top:2px}
+.cta{all:unset;box-sizing:border-box;cursor:pointer;display:block;width:100%;text-align:center;padding:16px;border-radius:999px;font-weight:500;font-size:1.05rem;color:var(--pearl);background:linear-gradient(110deg,var(--berry),#a23a73 45%,var(--berry));background-size:200% 100%;transition:.4s;box-shadow:0 14px 26px -12px var(--berry)}
+.cta:hover{background-position:100% 0}
+.cta.alt{background:var(--gold);color:var(--plum);box-shadow:none;margin-top:10px}
+.err{color:#b3123b;font-size:.9rem;margin-top:8px;min-height:1.2em}
+.note{text-align:center;font-size:.85rem;font-weight:300;margin-top:10px}
+.note a{color:var(--berry)}
+.hint{font-weight:300;font-size:.95rem;margin-bottom:12px}.edate{font-family:var(--display);font-size:1.2rem;color:var(--berry);margin-bottom:4px}#json{min-height:130px;font:13px monospace}.slot.x[aria-pressed=true]{background:#ddd;text-decoration:line-through;border-color:#ccc;color:#777;font-weight:400}
+#owner canvas{width:100%;max-width:320px;display:block;margin:14px auto 0;border-radius:14px;box-shadow:0 10px 26px -14px #000}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.spark{display:inline-block;color:var(--gold);animation:tw 3.2s ease-in-out infinite}
+@keyframes tw{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.35) rotate(20deg)}}
+@media (prefers-reduced-motion:reduce){.spark{animation:none}*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Nails by Jen</h1>
+  </header>
+
+  <section id="s2">
+    <div class="mhead">
+      <button class="nav" id="prev" aria-label="Previous month">‹</button>
+      <h2 id="month"></h2>
+      <button class="nav" id="next" aria-label="Next month">›</button>
+    </div>
+    <div class="grid" id="cal"></div>
+    <p class="legend">Striped: not available. Gold ring: already has a booking.</p>
+    <button class="cta alt" id="saveCal">Save calendar as picture</button>
+  </section>
+
+
+  <!-- Owner only: open the site with ?owner at the end of the address -->
+  <section id="edit" hidden>
+    <h2>My schedule</h2>
+    <p class="hint">Tap any day on the calendar to set when you're away or which times are taken.</p>
+    <div id="eDay" hidden>
+      <p class="edate" id="eDate"></p>
+      <label for="eNote">Note customers will see</label>
+      <input id="eNote" placeholder="Out of town, day off, family event…">
+      <button class="cta" id="eOff">Mark as not available</button>
+      <button class="cta alt" id="eOn" hidden>Mark as available again</button>
+      <label>Tap a time to mark it booked (a receipt opens below)</label>
+      <div class="slots" id="eSlots"></div>
+    </div>
+    <label for="json">Your schedule</label>
+    <textarea id="json" readonly></textarea>
+    <button class="cta alt" id="copyJson">Copy schedule</button>
+    <p class="note" style="text-align:left">Your schedule saves automatically on this device. Use <b>Copy schedule</b> as a backup (paste it somewhere safe, like Notes).</p>
+  </section>
+
+  <section id="s3" hidden>
+    <h2>Pick a time</h2>
+    <div class="slots" id="slots"></div>
+  </section>
+
+  <section id="s4" hidden>
+    <h2>Your details</h2>
+    <label for="who">Your name</label><input id="who" autocomplete="name">
+    <label for="phone">Mobile number</label><input id="phone" type="tel" autocomplete="tel">
+    <label for="msg">Which set do you want? (optional)</label><textarea id="msg" placeholder="Gel, extensions, nail art… colors, inspo, allergies"></textarea>
+    <div class="sum" id="sum"></div>
+    <button class="cta alt" id="saveRc" style="margin:0 0 12px">Save receipt as picture</button>
+    <button class="cta" id="go">Send booking request</button>
+    <div class="err" id="err" role="alert"></div>
+    <p class="note" id="bnote">This opens a message to Jen. Your slot is confirmed once she replies.<br>Prefer Instagram? <a id="igDm" target="_blank" rel="noopener">Send a DM</a></p>
+  </section>
+
+  <!-- Only visible when the page address ends with ?owner -->
+  <section id="owner" hidden>
+    <h2>Share my availability</h2>
+    <p style="font-weight:300;font-size:.95rem">Makes an image of your open times to post on Instagram.</p>
+    <button class="cta" id="dlStory">Download for Story (1080×1920)</button>
+    <button class="cta alt" id="dlPost">Download for Post (1080×1350)</button>
+    <button class="cta alt" id="dlBooked">Download booked days (Story)</button>
+    <canvas id="prevCanvas" hidden></canvas>
+  </section>
+</div>
+
+<script>
+/* ============ EDIT THIS PART ============ */
+const CONFIG = {
+  studio: "Nails by Jen",
+  instagram: "nailsbyjen.ph",
+  whatsapp: "639XXXXXXXXX",              // your number: country code + number, no + or spaces
+  closedDays: [],                        // weekly days off: 0 = Sunday ... 6 = Saturday (Sundays are open now)
+  hours: ["10:00 AM","11:30 AM","1:00 PM","2:30 PM","4:00 PM","5:30 PM"],
+  daysAhead: 90,
+  // Your off days and taken times now live in availability.json (set them from the ?owner view)
+  offDays: {},
+  booked: {}
+};
+/* ======================================== */
+
+const $=id=>document.getElementById(id), pad=n=>String(n).padStart(2,"0");
+const key=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const today=new Date(); today.setHours(0,0,0,0);
+const last=new Date(today); last.setDate(last.getDate()+CONFIG.daysAhead);
+let view=new Date(today.getFullYear(),today.getMonth(),1), date=null, time=null;
+const IG=`https://www.instagram.com/${CONFIG.instagram}/`;
+$("igDm").href=`https://ig.me/m/${CONFIG.instagram}`;
+const OWNER=true;
+if(OWNER){$("owner").hidden=false;$("edit").hidden=false;$("go").hidden=true;$("bnote").hidden=true}
+
+const offNote=dt=>CONFIG.offDays[key(dt)]||(CONFIG.closedDays.includes(dt.getDay())?"Jen isn't taking bookings on this day.":null);
+const openSlots=dt=>CONFIG.hours.filter(h=>!(CONFIG.booked[key(dt)]||[]).includes(h));
+const nice=()=>date.toLocaleDateString("en",{weekday:"long",month:"long",day:"numeric"});
+
+
+function drawCal(){
+  const g=$("cal"); g.innerHTML="";
+  ["S","M","T","W","T","F","S"].forEach(d=>{const e=document.createElement("div");e.className="dow";e.textContent=d;g.append(e)});
+  $("month").textContent=view.toLocaleDateString("en",{month:"long",year:"numeric"});
+  $("prev").disabled=view<=new Date(today.getFullYear(),today.getMonth(),1);
+  $("next").disabled=new Date(view.getFullYear(),view.getMonth()+1,1)>last;
+  for(let i=0;i<view.getDay();i++) g.append(document.createElement("div"));
+  const n=new Date(view.getFullYear(),view.getMonth()+1,0).getDate();
+  for(let d=1;d<=n;d++){
+    const dt=new Date(view.getFullYear(),view.getMonth(),d), b=document.createElement("button");
+    b.className="day"; b.textContent=d; b.setAttribute("aria-label",dt.toDateString());
+    const off=offNote(dt)||(openSlots(dt).length?null:"Fully booked this day. Try another date 💕");
+    b.disabled=dt<today||dt>last;
+    if(off) b.classList.add("off"); else if((CONFIG.booked[key(dt)]||[]).length) b.classList.add("bk");
+    if(+dt===+today) b.classList.add("today");
+    if(date&&+dt===+date) b.classList.add("sel");
+    b.onclick=()=>{if(OWNER){date=dt;time=null;$("s4").hidden=true;drawCal();openEdit();return}date=dt;time=null;drawCal();drawSlots(off);$("s3").hidden=false;$("s4").hidden=true;
+      $("s3").scrollIntoView({behavior:"smooth",block:"start"})};
+    g.append(b);
+  }
+}
+function drawSlots(off){
+  const w=$("slots"); w.innerHTML="";
+  if(off){w.innerHTML=`<div class="offmsg">${off}</div>`;return}
+  const taken=CONFIG.booked[key(date)]||[];
+  CONFIG.hours.forEach(h=>{
+    const b=document.createElement("button"); b.className="slot"; b.textContent=h;
+    b.setAttribute("aria-pressed",h===time); b.disabled=taken.includes(h);
+    b.onclick=()=>{time=h;drawSlots();$("s4").hidden=false;update();$("s4").scrollIntoView({behavior:"smooth",block:"start"})};
+    w.append(b);
+  });
+}
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function update(){
+  if(!(date&&time))return;
+  const row=(a,b)=>`<div class="rr"><span>${a}</span><i></i><b>${esc(b)}</b></div>`;
+  const who=$("who").value.trim(),ph=$("phone").value.trim(),nt=$("msg").value.trim();
+  const ref="NBJ-"+pad(date.getMonth()+1)+pad(date.getDate())+"-"+time.replace(/\D/g,"").slice(0,4);
+  $("sum").innerHTML=`<div class="rc"><div class="rh">${esc(CONFIG.studio)}</div><div class="rs">BOOKING RECEIPT</div><hr>`
+   +row("Date",date.toLocaleDateString("en",{weekday:"long",month:"long",day:"numeric"}))+row("Time",time)
+   +row("Name",who||"-")+row("Mobile",ph||"-")+(nt?row("Notes",nt):"")
+   +`<hr>`+row("Ref",ref)+row("Status","Pending")+`<hr><div class="rf">Thank you! Your slot is confirmed once Jen replies.</div></div>`;
+}
+["who","phone","msg"].forEach(i=>$(i).addEventListener("input",update));
+$("prev").onclick=()=>{view.setMonth(view.getMonth()-1);drawCal()};
+$("next").onclick=()=>{view.setMonth(view.getMonth()+1);drawCal()};
+
+$("go").onclick=()=>{
+  const who=$("who").value.trim(),ph=$("phone").value.trim();
+  if(!who||!ph){$("err").textContent="Please add your name and mobile number.";return}
+  $("err").textContent="";
+  const text=`Hi ${CONFIG.studio}! I'd like to book:\n• Date: ${nice()}\n• Time: ${time}\n• Name: ${who}\n• Mobile: ${ph}\n• Notes: ${$("msg").value.trim()||"none"}`;
+  window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(text)}`,"_blank");
+};
+
+/* ---------- Availability image for Instagram ---------- */
+async function makeCard(W,H,maxDays,mode){
+  await Promise.all([document.fonts.load("500 60px 'Bodoni Moda'"),document.fonts.load("italic 500 40px 'Bodoni Moda'"),document.fonts.load("400 30px Jost")]);
+  const c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d");
+  const bg=x.createLinearGradient(0,0,W,H); bg.addColorStop(0,"#fff4f6"); bg.addColorStop(.5,"#fbe6ea"); bg.addColorStop(1,"#f3b9c6");
+  x.fillStyle=bg; x.fillRect(0,0,W,H);
+  x.strokeStyle="#c9a063"; x.lineWidth=4; x.strokeRect(36,36,W-72,H-72);
+  x.textAlign="center"; x.fillStyle="#6b1f45";
+  x.font="500 92px 'Bodoni Moda',Georgia,serif"; x.fillText(CONFIG.studio,W/2,H>1500?210:170);
+  x.fillStyle="#c9a063"; x.font="italic 500 48px 'Bodoni Moda',Georgia,serif";
+  x.fillText(mode==="booked"?"already booked":"available this week",W/2,H>1500?285:240);
+  const days=[]; for(let d=new Date(today);d<=last&&days.length<maxDays;d.setDate(d.getDate()+1)){
+    const dt=new Date(d); if(mode==="booked"){if((CONFIG.booked[key(dt)]||[]).length)days.push([dt,CONFIG.hours]);continue}
+    if(offNote(dt))continue; const s=openSlots(dt); if(s.length)days.push([dt,s])}
+  let y=H>1500?400:330; const m=90, bottom=H-170, step=(bottom-y)/Math.max(days.length,1);
+  x.textAlign="left";
+  days.forEach(([dt,s])=>{
+    x.fillStyle="#3a0f2a"; x.font="500 40px 'Bodoni Moda',Georgia,serif";
+    x.fillText(dt.toLocaleDateString("en",{weekday:"long",month:"short",day:"numeric"}),m,y);
+    let cx=m, cy=y+22; x.font="400 27px Jost,Arial,sans-serif";
+    s.forEach(h=>{const w=x.measureText(h).width+36;
+      if(cx+w>W-m){cx=m;cy+=58}
+      const bk=mode==="booked"&&(CONFIG.booked[key(dt)]||[]).includes(h);
+      x.fillStyle=mode==="booked"?(bk?"#6b1f45":"#e3cfd6"):"#6b1f45"; x.beginPath(); x.roundRect(cx,cy,w,46,23); x.fill();
+      x.fillStyle=mode==="booked"&&!bk?"#8a6a78":"#fffaf7"; x.fillText(h,cx+18,cy+32);
+      if(mode==="booked"&&!bk){x.fillRect(cx+18,cy+23,w-36,2)} cx+=w+12});
+    y+=Math.min(step,230);
+  });
+  if(!days.length){x.textAlign="center";x.fillStyle="#6b1f45";x.font="500 50px 'Bodoni Moda',serif";x.fillText(mode==="booked"?"No bookings yet":"Fully booked for now 💕",W/2,H/2)}
+  x.textAlign="center"; x.fillStyle="#6b1f45"; x.font="500 38px Jost,Arial,sans-serif";
+  x.fillText("Book via link in bio",W/2,H-110); x.fillStyle="#c9a063"; x.fillText("@"+CONFIG.instagram,W/2,H-62);
+  return c;
+}
+async function download(W,H,n,name,mode){
+  const c=await makeCard(W,H,n,mode), p=$("prevCanvas"); p.width=W; p.height=H; p.getContext("2d").drawImage(c,0,0); p.hidden=false;
+  const a=document.createElement("a"); a.href=c.toDataURL("image/png"); a.download=name; a.click();
+}
+$("dlStory").onclick=()=>download(1080,1920,6,"availability-story.png");
+$("dlPost").onclick=()=>download(1080,1350,5,"availability-post.png");
+$("dlBooked").onclick=()=>download(1080,1920,6,"booked-days-story.png","booked");
+/* ---------- Save the calendar as a picture ---------- */
+async function monthCard(){
+  await Promise.all([document.fonts.load("500 60px 'Bodoni Moda'"),document.fonts.load("italic 500 40px 'Bodoni Moda'"),document.fonts.load("400 30px Jost")]);
+  const W=1080,H=1350,c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d");
+  const bg=x.createLinearGradient(0,0,W,H); bg.addColorStop(0,"#fff4f6"); bg.addColorStop(.5,"#fbe6ea"); bg.addColorStop(1,"#f3b9c6");
+  x.fillStyle=bg; x.fillRect(0,0,W,H); x.strokeStyle="#c9a063"; x.lineWidth=4; x.strokeRect(36,36,W-72,H-72);
+  x.textAlign="center"; x.fillStyle="#6b1f45"; x.font="500 92px 'Bodoni Moda',Georgia,serif"; x.fillText(CONFIG.studio,W/2,175);
+  x.fillStyle="#c9a063"; x.font="italic 500 54px 'Bodoni Moda',Georgia,serif";
+  x.fillText(view.toLocaleDateString("en",{month:"long",year:"numeric"}),W/2,255);
+  const m=90,cw=(W-2*m)/7,top=400,rh=140;
+  x.fillStyle="#6b1f45"; x.font="500 30px Jost,Arial,sans-serif";
+  ["S","M","T","W","T","F","S"].forEach((d,i)=>x.fillText(d,m+i*cw+cw/2,360));
+  const n=new Date(view.getFullYear(),view.getMonth()+1,0).getDate(), first=view.getDay();
+  const ring=(cx,cy)=>{x.beginPath();x.ellipse(cx,cy,42,56,0,0,7);x.strokeStyle="#c9a063";x.lineWidth=5;x.stroke()};
+  const nail=(cx,cy,kind)=>{
+    x.beginPath(); x.ellipse(cx,cy,42,56,0,0,7);
+    if(kind==="open"){const g=x.createLinearGradient(cx,cy-56,cx,cy+56);g.addColorStop(0,"#fff");g.addColorStop(1,"#f3b9c6");x.fillStyle=g;x.fill();x.strokeStyle="#fff";x.lineWidth=3;x.stroke();
+      x.beginPath();x.ellipse(cx-14,cy-30,7,14,.3,0,7);x.fillStyle="rgba(255,255,255,.9)";x.fill()}
+    else if(kind==="off"){x.fillStyle="#e9dde2";x.fill()}};
+  for(let d=1;d<=n;d++){
+    const dt=new Date(view.getFullYear(),view.getMonth(),d), i=first+d-1;
+    const cx=m+(i%7)*cw+cw/2, cy=top+Math.floor(i/7)*rh+50;
+    const gone=dt<today||dt>last, off=!gone&&(offNote(dt)||!openSlots(dt).length);
+    const kind=gone?"past":off?"off":"open"; nail(cx,cy,kind); if(kind==="open"&&(CONFIG.booked[key(dt)]||[]).length)ring(cx,cy);
+    x.font="500 34px Jost,Arial,sans-serif"; x.fillStyle=kind==="open"?"#3a0f2a":kind==="off"?"#8a6a78":"#c8b3bb"; x.fillText(d,cx,cy+12);
+    if(kind==="off"){x.strokeStyle="#8a6a78";x.lineWidth=2;x.beginPath();x.moveTo(cx-18,cy+4);x.lineTo(cx+18,cy+4);x.stroke()}
+  }
+  nail(150,H-175,"open"); nail(420,H-175,"open"); ring(420,H-175); nail(740,H-175,"off");
+  x.fillStyle="#3a0f2a"; x.font="400 32px Jost,Arial,sans-serif"; x.textAlign="left";
+  x.fillText("Available",205,H-163); x.fillText("Has booking",475,H-163); x.fillText("Not available",795,H-163);
+  x.textAlign="center"; x.fillStyle="#c9a063"; x.font="500 34px Jost,Arial,sans-serif"; x.fillText("@"+CONFIG.instagram,W/2,H-75);
+  return c;
+}
+$("saveCal").onclick=async()=>{const c=await monthCard(),a=document.createElement("a");
+  a.href=c.toDataURL("image/png"); a.download="calendar-"+view.toLocaleDateString("en",{month:"long",year:"numeric"}).replace(" ","-")+".png"; a.click()};
+
+/* ---------- Save the receipt as a picture ---------- */
+function rcInfo(){
+  const who=$("who").value.trim(),ph=$("phone").value.trim(),nt=$("msg").value.trim();
+  const rows=[["Date",date.toLocaleDateString("en",{weekday:"long",month:"long",day:"numeric"})],["Time",time],["Name",who||"-"],["Mobile",ph||"-"]];
+  if(nt)rows.push(["Notes",nt]);
+  return {rows,ref:"NBJ-"+pad(date.getMonth()+1)+pad(date.getDate())+"-"+time.replace(/\D/g,"").slice(0,4)};
+}
+function wrapText(x,t,w){const out=[];let line="";String(t).split(" ").forEach(word=>{const test=line?line+" "+word:word;
+  if(x.measureText(test).width>w&&line){out.push(line);line=word}else line=test});out.push(line);return out}
+async function receiptCard(){
+  await Promise.all([document.fonts.load("500 60px 'Bodoni Moda'"),document.fonts.load("400 30px Jost"),document.fonts.load("300 30px Jost")]);
+  const {rows,ref}=rcInfo(), W=1080,H=1350, c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d");
+  const bg=x.createLinearGradient(0,0,W,H); bg.addColorStop(0,"#fff4f6"); bg.addColorStop(1,"#f3b9c6"); x.fillStyle=bg; x.fillRect(0,0,W,H);
+  const px=140,pw=800,pad2=60,valW=430; x.font="500 34px Jost,Arial,sans-serif";
+  const all=[...rows,["Ref",ref],["Status","Pending"]].map(([a,b])=>[a,wrapText(x,b,valW)]);
+  const ph=330+all.reduce((s,r)=>s+r[1].length*44+22,0)+190, y0=Math.max(70,(H-ph-40)/2);
+  x.save(); x.shadowColor="rgba(107,31,69,.35)"; x.shadowBlur=40; x.shadowOffsetY=18; x.fillStyle="#fffdf9";
+  x.beginPath(); x.moveTo(px,y0); x.lineTo(px+pw,y0); x.lineTo(px+pw,y0+ph);
+  for(let i=0;i<pw/32;i++){x.lineTo(px+pw-16-32*i,y0+ph+22);x.lineTo(px+pw-32*(i+1),y0+ph)} x.closePath(); x.fill(); x.restore();
+  x.textAlign="center"; x.fillStyle="#6b1f45"; x.font="500 74px 'Bodoni Moda',Georgia,serif"; x.fillText(CONFIG.studio,W/2,y0+110);
+  x.fillStyle="#3a0f2a"; x.font="300 28px Jost,Arial,sans-serif"; if("letterSpacing" in x)x.letterSpacing="6px"; x.fillText("BOOKING RECEIPT",W/2,y0+160); if("letterSpacing" in x)x.letterSpacing="0px";
+  const dash=y=>{x.setLineDash([14,10]);x.strokeStyle="#f3b9c6";x.lineWidth=3;x.beginPath();x.moveTo(px+pad2,y);x.lineTo(px+pw-pad2,y);x.stroke();x.setLineDash([])};
+  dash(y0+200); let y=y0+270;
+  all.forEach(([a,lines],i)=>{
+    if(a==="Ref"){dash(y-34);y+=20}
+    x.textAlign="left"; x.fillStyle="#3a0f2a"; x.font="300 32px Jost,Arial,sans-serif"; x.fillText(a,px+pad2,y);
+    const lw=x.measureText(a).width; x.font="500 34px Jost,Arial,sans-serif"; x.textAlign="right";
+    lines.forEach((t,j)=>x.fillText(t,px+pw-pad2,y+j*44));
+    x.setLineDash([2,9]);x.strokeStyle="#f3b9c6";x.lineWidth=3;x.beginPath();x.moveTo(px+pad2+lw+16,y-8);
+    x.lineTo(px+pw-pad2-x.measureText(lines[0]).width-16,y-8);x.stroke();x.setLineDash([]);
+    y+=lines.length*44+22});
+  dash(y-4); x.textAlign="center"; x.fillStyle="#3a0f2a"; x.font="300 28px Jost,Arial,sans-serif";
+  wrapText(x,"Thank you! Your slot is confirmed once Jen replies.",pw-2*pad2).forEach((t,i)=>x.fillText(t,W/2,y+52+i*38));
+  x.fillStyle="#c9a063"; x.font="500 30px Jost,Arial,sans-serif"; x.fillText("@"+CONFIG.instagram,W/2,y+135);
+  return {c,ref};
+}
+$("saveRc").onclick=async()=>{
+  if(!(date&&time)){return}
+  const {c,ref}=await receiptCard(), a=document.createElement("a"); a.href=c.toDataURL("image/png"); a.download="receipt-"+ref+".png"; a.click();
+};
+
+/* ---------- Owner tools ---------- */
+function saveEdit(){
+  Object.keys(CONFIG.booked).forEach(k=>{if(!CONFIG.booked[k].length)delete CONFIG.booked[k]});
+  $("json").value=JSON.stringify({offDays:CONFIG.offDays,booked:CONFIG.booked},null,2);
+  try{localStorage.setItem("nbj-schedule",$("json").value)}catch(e){}
+  drawCal(); openEdit(true);
+}
+function openEdit(quiet){
+  const k=key(date), isOff=CONFIG.offDays[k]!==undefined;
+  $("eDay").hidden=false; $("eDate").textContent=nice(); $("eNote").value=isOff?CONFIG.offDays[k]:"";
+  $("eOff").textContent=isOff?"Update note":"Mark as not available"; $("eOn").hidden=!isOff;
+  const w=$("eSlots"); w.innerHTML="";
+  CONFIG.hours.forEach(h=>{const b=document.createElement("button"); b.className="slot x"; b.textContent=h;
+    b.setAttribute("aria-pressed",(CONFIG.booked[k]||[]).includes(h));
+    b.onclick=()=>{const a=CONFIG.booked[k]=CONFIG.booked[k]||[],i=a.indexOf(h);
+      if(i<0){a.push(h);time=h;saveEdit();$("s4").hidden=false;update();$("s4").scrollIntoView({behavior:"smooth",block:"start"})}else{a.splice(i,1);saveEdit()}};
+    w.append(b)});
+  if(!quiet)$("edit").scrollIntoView({behavior:"smooth",block:"start"});
+}
+$("eOff").onclick=()=>{CONFIG.offDays[key(date)]=$("eNote").value.trim()||"Jen isn't available on this day 💕";saveEdit()};
+$("eOn").onclick=()=>{delete CONFIG.offDays[key(date)];saveEdit()};
+$("copyJson").onclick=async()=>{$("json").select();try{await navigator.clipboard.writeText($("json").value);$("copyJson").textContent="Copied!"}catch(e){document.execCommand("copy")}};
+
+let saved=null; try{saved=JSON.parse(localStorage.getItem("nbj-schedule"))}catch(e){}
+(saved?Promise.resolve(saved):fetch("availability.json?"+Date.now()).then(r=>r.json())).then(d=>{CONFIG.offDays=d.offDays||{};CONFIG.booked=d.booked||{}})
+  .catch(()=>{}).finally(()=>{drawCal();$("json").value=JSON.stringify({offDays:CONFIG.offDays,booked:CONFIG.booked},null,2)});
+</script>
+</body>
+</html>
