@@ -144,6 +144,11 @@ textarea{min-height:84px;resize:vertical}
   <section id="edit" hidden>
     <h2>My schedule</h2>
     <p class="hint">Tap a date on the calendar above. Changes save by themselves and show on the calendar right away.</p>
+    <div id="login" hidden>
+      <label for="lEmail">Owner email</label><input id="lEmail" type="email" autocomplete="username">
+      <label for="lPass">Password</label><input id="lPass" type="password" autocomplete="current-password">
+      <button class="cta" id="lGo" style="margin-top:14px">Sign in</button><div class="err" id="lErr" role="alert"></div>
+    </div>
     <div id="eDay" hidden>
       <p class="edate" id="eDate"></p>
       <label for="eNote">Reason shown to clients (optional)</label>
@@ -170,6 +175,9 @@ textarea{min-height:84px;resize:vertical}
   </section>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
 /* ============ EDIT THIS PART ============ */
 const CONFIG = {
@@ -184,6 +192,13 @@ const CONFIG = {
   offDays: {},
   booked: {}
 };
+/* Online schedule (so every device sees the same one). Paste your Firebase web app config here. */
+const FIREBASE = {
+  apiKey: "AIzaSyCIvn1QuzTpGsohhehW1EUvviKBmrCvERs",
+  authDomain: "nails-by-jen.firebaseapp.com",
+  projectId: "nails-by-jen",
+  appId: "1:915239439604:web:b5c8fe7dbea21be7dc62a1"
+};
 /* ======================================== */
 
 const $=id=>document.getElementById(id), pad=n=>String(n).padStart(2,"0");
@@ -192,7 +207,8 @@ const today=new Date(); today.setHours(0,0,0,0);
 const last=new Date(today); last.setDate(last.getDate()+CONFIG.daysAhead);
 let view=new Date(today.getFullYear(),today.getMonth(),1), date=null, time=null;
 const IG=`https://www.instagram.com/${CONFIG.instagram}/`;
-const OWNER=true;
+const SYNC=!!FIREBASE.apiKey&&typeof firebase!=="undefined"; let DB=null,AUTH=null,SIGNED=!SYNC;
+const OWNER=new URLSearchParams(location.search).has("owner");
 if(OWNER){$("owner").hidden=false;$("edit").hidden=false}
 
 const offNote=dt=>CONFIG.offDays[key(dt)]||(CONFIG.closedDays.includes(dt.getDay())?"Jen isn't taking bookings on this day.":null);
@@ -321,10 +337,12 @@ function wrapText(x,t,w){const out=[];let line="";String(t).split(" ").forEach(w
 function saveEdit(){
   Object.keys(CONFIG.booked).forEach(k=>{if(!CONFIG.booked[k].length)delete CONFIG.booked[k]});
   $("json").value=JSON.stringify({offDays:CONFIG.offDays,booked:CONFIG.booked},null,2);
-  try{localStorage.setItem("nbj-schedule",$("json").value)}catch(e){}
+  if(SYNC)DB.collection("schedule").doc("main").set({offDays:CONFIG.offDays,booked:CONFIG.booked}).catch(()=>alert("Could not save. Please sign in again."));
+  else try{localStorage.setItem("nbj-schedule",$("json").value)}catch(e){}
   drawCal(); openEdit(true);
 }
 function openEdit(quiet){
+  if(!SIGNED){$("login").hidden=false;$("edit").scrollIntoView({behavior:"smooth",block:"start"});return}
   const k=key(date), isOff=CONFIG.offDays[k]!==undefined;
   $("eDay").hidden=false; $("eDate").textContent=nice(); $("eNote").value=isOff?CONFIG.offDays[k]:"";
   $("eOff").textContent=isOff?"Update note":"Mark as not available"; $("eOn").hidden=!isOff;
@@ -340,9 +358,22 @@ $("eOff").onclick=()=>{CONFIG.offDays[key(date)]=$("eNote").value.trim()||"Jen i
 $("eOn").onclick=()=>{delete CONFIG.offDays[key(date)];saveEdit()};
 $("copyJson").onclick=async()=>{$("json").select();try{await navigator.clipboard.writeText($("json").value);$("copyJson").textContent="Copied!"}catch(e){document.execCommand("copy")}};
 
-let saved=null; try{saved=JSON.parse(localStorage.getItem("nbj-schedule"))}catch(e){}
-(saved?Promise.resolve(saved):fetch("availability.json?"+Date.now()).then(r=>r.json())).then(d=>{CONFIG.offDays=d.offDays||{};CONFIG.booked=d.booked||{}})
-  .catch(()=>{}).finally(()=>{drawCal();$("json").value=JSON.stringify({offDays:CONFIG.offDays,booked:CONFIG.booked},null,2)});
+function loadLocal(){
+  let saved=null; try{saved=JSON.parse(localStorage.getItem("nbj-schedule"))}catch(e){}
+  (saved?Promise.resolve(saved):fetch("availability.json?"+Date.now()).then(r=>r.json())).then(d=>{CONFIG.offDays=d.offDays||{};CONFIG.booked=d.booked||{}})
+    .catch(()=>{}).finally(()=>{drawCal();$("json").value=JSON.stringify({offDays:CONFIG.offDays,booked:CONFIG.booked},null,2)});
+}
+if(SYNC){
+  firebase.initializeApp(FIREBASE); DB=firebase.firestore(); AUTH=firebase.auth();
+  const ref=DB.collection("schedule").doc("main");
+  document.querySelector("#edit details").hidden=true;
+  ref.onSnapshot(snap=>{const d=snap.exists?snap.data():{}; CONFIG.offDays=d.offDays||{}; CONFIG.booked=d.booked||{};
+    drawCal(); if(OWNER&&SIGNED&&date)openEdit(true)},()=>{drawCal()});
+  AUTH.onAuthStateChanged(u=>{SIGNED=!!u; $("login").hidden=SIGNED||!OWNER; if(!u)$("eDay").hidden=true;
+    if(u)ref.get().then(x=>{if(!x.exists){try{const l=JSON.parse(localStorage.getItem("nbj-schedule")); if(l)ref.set({offDays:l.offDays||{},booked:l.booked||{}})}catch(e){}}}).catch(()=>{})});
+  $("lGo").onclick=()=>{$("lErr").textContent=""; AUTH.signInWithEmailAndPassword($("lEmail").value.trim(),$("lPass").value).catch(()=>{$("lErr").textContent="Wrong email or password."})};
+  drawCal();
+}else loadLocal();
 </script>
 </body>
 </html>
