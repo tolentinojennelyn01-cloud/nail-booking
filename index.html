@@ -97,12 +97,23 @@ textarea{min-height:84px;resize:vertical}
 [hidden]{display:none!important}
 #eSlots{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px}
 #eSlots .slot{text-align:center;padding:14px 6px}
-details{margin-top:20px;padding-top:6px;border-top:1px dashed var(--rose)}summary{cursor:pointer;font-weight:500;color:var(--berry);padding:10px 0}
+#eOff{margin-top:12px}details{margin-top:20px;padding-top:6px;border-top:1px dashed var(--rose)}summary{cursor:pointer;font-weight:500;color:var(--berry);padding:10px 0}
 :focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .spark{display:inline-block;color:var(--gold);animation:tw 3.2s ease-in-out infinite}
 @keyframes tw{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.35) rotate(20deg)}}
 @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-@media (max-width:480px){.wrap{padding:40px 14px 64px}section{padding:24px 16px;border-radius:24px}.grid{gap:6px 2px}.day{width:min(100%,42px);font-size:.92rem}.mhead h2{font-size:1.35rem}}
+.grid{gap:10px 6px}
+.day{width:100%;max-width:74px;aspect-ratio:auto;min-height:112px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:7px;padding:12px 0 8px;border-radius:38px 38px 16px 16px}
+.day::before{top:7px;left:17%;width:15%;height:24px}
+.dn{font-size:1rem;font-weight:500;line-height:1}
+.tms{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:.68rem;font-weight:500;line-height:1}
+.tms i{font-style:normal}
+.tms i.x{color:#b3123b;text-decoration:line-through;text-decoration-thickness:2px;opacity:.85}
+.day.sel .tms i.x{color:#ffd6df}
+.notes{margin-top:22px;padding:20px 22px;border-radius:22px;background:var(--blush);border:1px dashed var(--rose);text-align:center;font-size:.9rem;font-weight:300}
+.notes b{display:block;font-family:var(--display);font-size:1.25rem;font-weight:500;color:var(--berry);margin-bottom:8px}
+.notes p+p{margin-top:8px}.notes strong{font-weight:500;color:var(--berry)}
+@media (max-width:480px){.wrap{padding:40px 14px 64px}section{padding:24px 16px;border-radius:24px}.grid{gap:6px 2px}.day{max-width:44px;min-height:98px}.tms{font-size:.58rem}.dn{font-size:.9rem}.mhead h2{font-size:1.35rem}}
 @media (prefers-reduced-motion:reduce){.spark{animation:none}*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -121,6 +132,10 @@ details{margin-top:20px;padding-top:6px;border-top:1px dashed var(--rose)}summar
     </div>
     <div class="grid" id="cal"></div>
     <p class="legend"><span><i class="lg open"></i>Available</span><span><i class="lg bk"></i>Has booking</span><span><i class="lg off"></i>Not available</span></p>
+    <div class="notes"><b>Notes</b>
+      <p>Appointment times are 3 hours apart.</p>
+      <p>Pick a date and a time, then send your request. Your slot is confirmed once Jen replies.</p>
+      <p>If your preferred date is fully booked, message Jen on Instagram. Thank you!</p></div>
     <button class="cta alt" id="saveCal">Save calendar as picture</button>
   </section>
 
@@ -128,21 +143,20 @@ details{margin-top:20px;padding-top:6px;border-top:1px dashed var(--rose)}summar
   <!-- Owner only: open the site with ?owner at the end of the address -->
   <section id="edit" hidden>
     <h2>My schedule</h2>
-    <p class="hint">Tap any day on the calendar to set when you're away or which times are taken.</p>
+    <p class="hint">Tap a date on the calendar above. Changes save by themselves and show on the calendar right away.</p>
     <div id="eDay" hidden>
       <p class="edate" id="eDate"></p>
-      <label for="eNote">Note customers will see</label>
+      <label for="eNote">Reason shown to clients (optional)</label>
       <input id="eNote" placeholder="Out of town, day off, family event…">
       <button class="cta" id="eOff">Mark as not available</button>
       <button class="cta alt" id="eOn" hidden>Mark as available again</button>
-      <label>Tap a time to cross it out. Booked times drop to the end.</label>
+      <label>Or tap a time to mark it as booked (tap again to undo)</label>
       <div class="slots" id="eSlots"></div>
     </div>
-    <details><summary>Backup my schedule</summary>
-    <label for="json">Your schedule</label>
-    <textarea id="json" readonly></textarea>
+    <details><summary>Show my changes to clients</summary>
+    <p class="note" style="text-align:left">Your changes already save on this device. Clients see them on the website only after you update <b>availability.json</b> on GitHub: tap <b>Copy schedule</b>, open availability.json in your repo, paste to replace everything inside, then Commit.</p>
+    <textarea id="json" readonly hidden></textarea>
     <button class="cta alt" id="copyJson">Copy schedule</button>
-    <p class="note" style="text-align:left">Your schedule saves automatically on this device. Use <b>Copy schedule</b> as a backup (paste it somewhere safe, like Notes).</p>
     </details>
   </section>
 
@@ -178,9 +192,10 @@ details{margin-top:20px;padding-top:6px;border-top:1px dashed var(--rose)}summar
 const CONFIG = {
   studio: "Nails by Jen",
   instagram: "nailsbyjen.ph",
+  site: "https://tolentinojennelyn01-cloud.github.io/nailsbyjen-site/",   // printed on the saved calendar picture
   whatsapp: "639XXXXXXXXX",              // your number: country code + number, no + or spaces
   closedDays: [],                        // weekly days off: 0 = Sunday ... 6 = Saturday (Sundays are open now)
-  hours: ["10:00 AM","2:00 PM","6:00 PM"],   // 4 hours apart; last start 6:00 PM so the set ends by 10:00 PM
+  hours: ["8:00 AM","11:00 AM","2:00 PM","5:00 PM"],   // 3 hours apart; edit these to change your times
   daysAhead: 90,
   // Your off days and taken times now live in availability.json (set them from the ?owner view)
   offDays: {},
@@ -203,6 +218,9 @@ const openSlots=dt=>CONFIG.hours.filter(h=>!(CONFIG.booked[key(dt)]||[]).include
 const nice=()=>date.toLocaleDateString("en",{weekday:"long",month:"long",day:"numeric"});
 
 
+const shortT=h=>h.replace(":00 ","");
+function cellHtml(dt,d,hide){const bk=CONFIG.booked[key(dt)]||[];
+  return `<span class="dn">${d}</span>`+(hide?"":`<span class="tms">${CONFIG.hours.map(h=>`<i${bk.includes(h)?' class="x"':''}>${shortT(h)}</i>`).join("")}</span>`)}
 function drawCal(){
   const g=$("cal"); g.innerHTML="";
   ["S","M","T","W","T","F","S"].forEach(d=>{const e=document.createElement("div");e.className="dow";e.textContent=d;g.append(e)});
@@ -213,9 +231,9 @@ function drawCal(){
   const n=new Date(view.getFullYear(),view.getMonth()+1,0).getDate();
   for(let d=1;d<=n;d++){
     const dt=new Date(view.getFullYear(),view.getMonth(),d), b=document.createElement("button");
-    b.className="day"; b.textContent=d; b.setAttribute("aria-label",dt.toDateString());
+    b.className="day"; b.setAttribute("aria-label",dt.toDateString());
     const off=offNote(dt)||(openSlots(dt).length?null:"Fully booked this day. Try another date 💕");
-    b.disabled=dt<today||dt>last;
+    b.disabled=dt<today||dt>last; b.innerHTML=cellHtml(dt,d,off||b.disabled);
     if(off) b.classList.add("off"); else if((CONFIG.booked[key(dt)]||[]).length) b.classList.add("bk");
     if(+dt===+today) b.classList.add("today");
     if(date&&+dt===+date) b.classList.add("sel");
@@ -300,35 +318,43 @@ $("dlStory").onclick=()=>download(1080,1920,6,"availability-story.png");
 $("dlPost").onclick=()=>download(1080,1350,5,"availability-post.png");
 /* ---------- Save the calendar as a picture ---------- */
 async function monthCard(){
-  await Promise.all([document.fonts.load("500 60px 'Bodoni Moda'"),document.fonts.load("italic 500 40px 'Bodoni Moda'"),document.fonts.load("400 30px Jost")]);
-  const W=1080,H=1350,c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d");
+  await Promise.all([document.fonts.load("500 60px 'Bodoni Moda'"),document.fonts.load("italic 500 40px 'Bodoni Moda'"),document.fonts.load("500 30px Jost"),document.fonts.load("300 30px Jost")]);
+  const n=new Date(view.getFullYear(),view.getMonth()+1,0).getDate(), first=new Date(view.getFullYear(),view.getMonth(),1).getDay(), rows=Math.ceil((first+n)/7);
+  const W=1600,rh=170,top=340,body=Math.max(rows*rh,640),H=top+body+240,c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d");
   const bg=x.createLinearGradient(0,0,W,H); bg.addColorStop(0,"#fff4f6"); bg.addColorStop(.5,"#fbe6ea"); bg.addColorStop(1,"#f3b9c6");
   x.fillStyle=bg; x.fillRect(0,0,W,H); x.strokeStyle="#c9a063"; x.lineWidth=4; x.strokeRect(36,36,W-72,H-72);
-  x.textAlign="center"; x.fillStyle="#6b1f45"; x.font="500 92px 'Bodoni Moda',Georgia,serif"; x.fillText(CONFIG.studio,W/2,175);
-  x.fillStyle="#c9a063"; x.font="italic 500 54px 'Bodoni Moda',Georgia,serif";
-  x.fillText(view.toLocaleDateString("en",{month:"long",year:"numeric"}),W/2,255);
-  const m=90,cw=(W-2*m)/7,top=400,rh=140;
-  x.fillStyle="#6b1f45"; x.font="500 30px Jost,Arial,sans-serif";
-  ["S","M","T","W","T","F","S"].forEach((d,i)=>x.fillText(d,m+i*cw+cw/2,360));
-  const n=new Date(view.getFullYear(),view.getMonth()+1,0).getDate(), first=view.getDay();
-  const ring=(cx,cy)=>{x.beginPath();x.ellipse(cx,cy,42,56,0,0,7);x.strokeStyle="#c9a063";x.lineWidth=5;x.stroke()};
-  const nail=(cx,cy,kind)=>{
-    x.beginPath(); x.ellipse(cx,cy,42,56,0,0,7);
-    if(kind==="open"){const g=x.createLinearGradient(cx,cy-56,cx,cy+56);g.addColorStop(0,"#fff");g.addColorStop(1,"#f3b9c6");x.fillStyle=g;x.fill();x.strokeStyle="#fff";x.lineWidth=3;x.stroke();
-      x.beginPath();x.ellipse(cx-14,cy-30,7,14,.3,0,7);x.fillStyle="rgba(255,255,255,.9)";x.fill()}
-    else if(kind==="off"){x.fillStyle="#e9dde2";x.fill()}};
+  const m=80,cw=1040/7,nx=1180,nw=340;
+  x.textAlign="left"; x.fillStyle="#6b1f45"; x.font="500 96px 'Bodoni Moda',Georgia,serif"; x.fillText(CONFIG.studio,m,175);
+  x.fillStyle="#8f6a2e"; x.font="italic 500 52px 'Bodoni Moda',Georgia,serif"; x.fillText(view.toLocaleDateString("en",{month:"long",year:"numeric"}),m,250);
+  x.textAlign="center"; x.fillStyle="#6b1f45"; x.font="500 26px Jost,Arial,sans-serif";
+  ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach((d,i)=>x.fillText(d,m+i*cw+cw/2,top-22));
   for(let d=1;d<=n;d++){
-    const dt=new Date(view.getFullYear(),view.getMonth(),d), i=first+d-1;
-    const cx=m+(i%7)*cw+cw/2, cy=top+Math.floor(i/7)*rh+50;
-    const gone=dt<today||dt>last, off=!gone&&(offNote(dt)||!openSlots(dt).length);
-    const kind=gone?"past":off?"off":"open"; nail(cx,cy,kind); if(kind==="open"&&(CONFIG.booked[key(dt)]||[]).length)ring(cx,cy);
-    x.font="500 34px Jost,Arial,sans-serif"; x.fillStyle=kind==="open"?"#3a0f2a":kind==="off"?"#8a6a78":"#c8b3bb"; x.fillText(d,cx,cy+12);
-    if(kind==="off"){x.strokeStyle="#8a6a78";x.lineWidth=2;x.beginPath();x.moveTo(cx-18,cy+4);x.lineTo(cx+18,cy+4);x.stroke()}
+    const dt=new Date(view.getFullYear(),view.getMonth(),d), i=first+d-1, cx=m+(i%7)*cw+cw/2, y0=top+Math.floor(i/7)*rh;
+    const gone=dt<today||dt>last, off=!gone&&(offNote(dt)||!openSlots(dt).length), bk=CONFIG.booked[key(dt)]||[], nh=rh-14;
+    x.beginPath(); x.roundRect(cx-54,y0+4,108,nh,[54,54,20,20]);
+    if(gone){x.strokeStyle="#e5d3da";x.lineWidth=2;x.stroke()}
+    else if(off){x.fillStyle="#e9dde2";x.fill()}
+    else{const g=x.createLinearGradient(0,y0,0,y0+nh);g.addColorStop(0,"#fff");g.addColorStop(1,"#f3b9c6");x.fillStyle=g;x.fill();x.strokeStyle=bk.length?"#c9a063":"#fff";x.lineWidth=bk.length?5:3;x.stroke()}
+    x.fillStyle=gone?"#c8b3bb":off?"#8a6a78":"#3a0f2a"; x.font="500 30px Jost,Arial,sans-serif"; x.fillText(d,cx,y0+44);
+    if(!gone&&!off){const st=Math.min(28,(nh-64)/CONFIG.hours.length); x.font="500 "+Math.min(22,st-2)+"px Jost,Arial,sans-serif";
+      CONFIG.hours.forEach((h,k)=>{const t=shortT(h),ty=y0+76+k*st;
+        if(bk.includes(h)){x.fillStyle="#b3123b";x.fillText(t,cx,ty);const w=x.measureText(t).width;x.fillRect(cx-w/2-3,ty-8,w+6,3)}
+        else{x.fillStyle="#3a0f2a";x.fillText(t,cx,ty)}})}
   }
-  nail(150,H-175,"open"); nail(420,H-175,"open"); ring(420,H-175); nail(740,H-175,"off");
-  x.fillStyle="#3a0f2a"; x.font="400 32px Jost,Arial,sans-serif"; x.textAlign="left";
-  x.fillText("Available",205,H-163); x.fillText("Has booking",475,H-163); x.fillText("Not available",795,H-163);
-  x.textAlign="center"; x.fillStyle="#c9a063"; x.font="500 34px Jost,Arial,sans-serif"; x.fillText("@"+CONFIG.instagram,W/2,H-75);
+  const ly=top+rows*rh+60, sw=(sx,kind)=>{x.beginPath();x.roundRect(sx,ly-22,26,34,[13,13,6,6]);
+    if(kind==="off"){x.fillStyle="#e9dde2";x.fill()}else{x.fillStyle="#f9d6de";x.fill();x.strokeStyle=kind==="bk"?"#c9a063":"#fff";x.lineWidth=kind==="bk"?4:2;x.stroke()}};
+  sw(m,"open"); sw(m+260,"bk"); sw(m+560,"off");
+  x.textAlign="left"; x.fillStyle="#3a0f2a"; x.font="400 28px Jost,Arial,sans-serif";
+  x.fillText("Available",m+40,ly+5); x.fillText("Has booking",m+300,ly+5); x.fillText("Not available",m+600,ly+5);
+  x.beginPath(); x.roundRect(nx,top-60,nw,body+60,28); x.fillStyle="rgba(255,255,255,.55)"; x.fill();
+  x.setLineDash([12,9]); x.strokeStyle="#f3b9c6"; x.lineWidth=3; x.stroke(); x.setLineDash([]);
+  x.textAlign="center"; x.fillStyle="#6b1f45"; x.font="500 44px 'Bodoni Moda',Georgia,serif"; x.fillText("Notes",nx+nw/2,top+8);
+  x.fillStyle="#3a0f2a"; x.font="300 23px Jost,Arial,sans-serif"; let ny=top+66;
+  ["Appointment times are 3 hours apart.",
+   "Pick a date and a time, then send your request. Your slot is confirmed once Jen replies.","If your preferred date is fully booked, message Jen on Instagram. Thank you!"]
+  .forEach(t=>{wrapText(x,t,nw-56).forEach(l=>{x.fillText(l,nx+nw/2,ny);ny+=32});ny+=20});
+  x.fillStyle="#3a0f2a"; x.font="400 30px Jost,Arial,sans-serif"; x.fillText("Book here: "+CONFIG.site.replace(/^https?:\/\//,"").replace(/\/$/,""),W/2,H-112);
+  x.fillStyle="#8f6a2e"; x.font="500 34px Jost,Arial,sans-serif"; x.fillText("@"+CONFIG.instagram,W/2,H-62);
   return c;
 }
 $("saveCal").onclick=async()=>{const c=await monthCard(),a=document.createElement("a");
