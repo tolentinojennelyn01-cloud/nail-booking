@@ -134,8 +134,8 @@ textarea{min-height:84px;resize:vertical}
     <p class="legend"><span><i class="lg open"></i>Available</span><span><i class="lg bk"></i>Has booking</span><span><i class="lg off"></i>Not available</span></p>
     <div class="notes"><b>Notes</b>
       <p>Appointment times are 3 hours apart.</p>
-      <p>Pick a date and a time, then send your request. Your slot is confirmed once Jen replies.</p>
-      <p>If your preferred date is fully booked, message Jen on Instagram. Thank you!</p></div>
+      <p>To book, message Jen on Instagram with your preferred date and time. Your slot is confirmed once Jen replies.</p>
+      <p>Thank you!</p></div>
     <button class="cta alt" id="saveCal">Save calendar as picture</button>
   </section>
 
@@ -158,23 +158,6 @@ textarea{min-height:84px;resize:vertical}
     <textarea id="json" readonly hidden></textarea>
     <button class="cta alt" id="copyJson">Copy schedule</button>
     </details>
-  </section>
-
-  <section id="s3" hidden>
-    <h2>Pick a time</h2>
-    <div class="slots" id="slots"></div>
-  </section>
-
-  <section id="s4" hidden>
-    <h2>Your details</h2>
-    <label for="who">Your name</label><input id="who" autocomplete="name">
-    <label for="phone">Mobile number</label><input id="phone" type="tel" autocomplete="tel">
-    <label for="msg">Which set do you want? (optional)</label><textarea id="msg" placeholder="Gel, extensions, nail art… colors, inspo, allergies"></textarea>
-    <div class="sum" id="sum"></div>
-    <button class="cta alt" id="saveRc" style="margin:0 0 12px">Save receipt as picture</button>
-    <button class="cta" id="go">Send booking request</button>
-    <div class="err" id="err" role="alert"></div>
-    <p class="note" id="bnote">This opens a message to Jen. Your slot is confirmed once she replies.<br>Prefer Instagram? <a id="igDm" target="_blank" rel="noopener">Send a DM</a></p>
   </section>
 
   <!-- Only visible when the page address ends with ?owner -->
@@ -209,9 +192,8 @@ const today=new Date(); today.setHours(0,0,0,0);
 const last=new Date(today); last.setDate(last.getDate()+CONFIG.daysAhead);
 let view=new Date(today.getFullYear(),today.getMonth(),1), date=null, time=null;
 const IG=`https://www.instagram.com/${CONFIG.instagram}/`;
-$("igDm").href=`https://ig.me/m/${CONFIG.instagram}`;
 const OWNER=true;
-if(OWNER){$("owner").hidden=false;$("edit").hidden=false;$("go").hidden=true;$("bnote").hidden=true}
+if(OWNER){$("owner").hidden=false;$("edit").hidden=false}
 
 const offNote=dt=>CONFIG.offDays[key(dt)]||(CONFIG.closedDays.includes(dt.getDay())?"Jen isn't taking bookings on this day.":null);
 const openSlots=dt=>CONFIG.hours.filter(h=>!(CONFIG.booked[key(dt)]||[]).includes(h));
@@ -237,44 +219,14 @@ function drawCal(){
     if(off) b.classList.add("off"); else if((CONFIG.booked[key(dt)]||[]).length) b.classList.add("bk");
     if(+dt===+today) b.classList.add("today");
     if(date&&+dt===+date) b.classList.add("sel");
-    b.onclick=()=>{if(OWNER){date=dt;time=null;$("s4").hidden=true;drawCal();openEdit();return}date=dt;time=null;drawCal();drawSlots(off);$("s3").hidden=false;$("s4").hidden=true;
-      $("s3").scrollIntoView({behavior:"smooth",block:"start"})};
+    b.onclick=()=>{if(OWNER){date=dt;time=null;drawCal();openEdit()}};
     g.append(b);
   }
 }
-function drawSlots(off){
-  const w=$("slots"); w.innerHTML="";
-  if(off){w.innerHTML=`<div class="offmsg">${off}</div>`;return}
-  const taken=CONFIG.booked[key(date)]||[];
-  CONFIG.hours.forEach(h=>{
-    const b=document.createElement("button"); b.className="slot"; b.textContent=h;
-    b.setAttribute("aria-pressed",h===time); b.disabled=taken.includes(h);
-    b.onclick=()=>{time=h;drawSlots();$("s4").hidden=false;update();$("s4").scrollIntoView({behavior:"smooth",block:"start"})};
-    w.append(b);
-  });
-}
 function esc(t){return String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
-function update(){
-  if(!(date&&time))return;
-  const row=(a,b)=>`<div class="rr"><span>${a}</span><i></i><b>${esc(b)}</b></div>`;
-  const who=$("who").value.trim(),ph=$("phone").value.trim(),nt=$("msg").value.trim();
-  const ref="NBJ-"+pad(date.getMonth()+1)+pad(date.getDate())+"-"+time.replace(/\D/g,"").slice(0,4);
-  $("sum").innerHTML=`<div class="rc"><div class="rh">${esc(CONFIG.studio)}</div><div class="rs">BOOKING RECEIPT</div><hr>`
-   +row("Date",date.toLocaleDateString("en",{weekday:"long",month:"long",day:"numeric"}))+row("Time",time)
-   +row("Name",who||"-")+row("Mobile",ph||"-")+(nt?row("Notes",nt):"")
-   +`<hr>`+row("Ref",ref)+row("Status","Pending")+`<hr><div class="rf">Thank you! Your slot is confirmed once Jen replies.</div></div>`;
-}
-["who","phone","msg"].forEach(i=>$(i).addEventListener("input",update));
 $("prev").onclick=()=>{view.setMonth(view.getMonth()-1);drawCal()};
 $("next").onclick=()=>{view.setMonth(view.getMonth()+1);drawCal()};
 
-$("go").onclick=()=>{
-  const who=$("who").value.trim(),ph=$("phone").value.trim();
-  if(!who||!ph){$("err").textContent="Please add your name and mobile number.";return}
-  $("err").textContent="";
-  const text=`Hi ${CONFIG.studio}! I'd like to book:\n• Date: ${nice()}\n• Time: ${time}\n• Name: ${who}\n• Mobile: ${ph}\n• Notes: ${$("msg").value.trim()||"none"}`;
-  window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(text)}`,"_blank");
-};
 
 /* ---------- Availability image for Instagram ---------- */
 async function makeCard(W,H,maxDays,mode){
@@ -287,8 +239,9 @@ async function makeCard(W,H,maxDays,mode){
   x.font="500 92px 'Bodoni Moda',Georgia,serif"; x.fillText(CONFIG.studio,W/2,H>1500?210:170);
   x.fillStyle="#c9a063"; x.font="italic 500 48px 'Bodoni Moda',Georgia,serif";
   x.fillText(mode==="booked"?"already booked":"available this week",W/2,H>1500?285:240);
-  const days=[]; for(let d=new Date(today);d<=last&&days.length<maxDays;d.setDate(d.getDate()+1)){
-    const dt=new Date(d); if(mode==="booked"){if((CONFIG.booked[key(dt)]||[]).length)days.push([dt,CONFIG.hours]);continue}
+  const days=[], ws=new Date(today); ws.setDate(ws.getDate()-(today.getDay()+6)%7+(today.getDay()===0?7:0)); const we=new Date(ws); we.setDate(we.getDate()+6);
+  for(let d=new Date(ws);d<=we&&d<=last&&days.length<maxDays;d.setDate(d.getDate()+1)){
+    if(d<today)continue; const dt=new Date(d); if(mode==="booked"){if((CONFIG.booked[key(dt)]||[]).length)days.push([dt,CONFIG.hours]);continue}
     if(offNote(dt))continue; const bkd=CONFIG.booked[key(dt)]||[];
     days.push([dt,[...CONFIG.hours.filter(h=>!bkd.includes(h)),...CONFIG.hours.filter(h=>bkd.includes(h))]])}
   let y=H>1500?400:330; const m=90, bottom=H-170, step=(bottom-y)/Math.max(days.length,1);
@@ -314,8 +267,8 @@ async function download(W,H,n,name,mode){
   const c=await makeCard(W,H,n,mode), p=$("prevCanvas"); p.width=W; p.height=H; p.getContext("2d").drawImage(c,0,0); p.hidden=false;
   const a=document.createElement("a"); a.href=c.toDataURL("image/png"); a.download=name; a.click();
 }
-$("dlStory").onclick=()=>download(1080,1920,6,"availability-story.png");
-$("dlPost").onclick=()=>download(1080,1350,5,"availability-post.png");
+$("dlStory").onclick=()=>download(1080,1920,7,"availability-story.png");
+$("dlPost").onclick=()=>download(1080,1350,7,"availability-post.png");
 /* ---------- Save the calendar as a picture ---------- */
 async function monthCard(){
   await Promise.all([document.fonts.load("500 60px 'Bodoni Moda'"),document.fonts.load("italic 500 40px 'Bodoni Moda'"),document.fonts.load("500 30px Jost"),document.fonts.load("300 30px Jost")]);
@@ -351,7 +304,7 @@ async function monthCard(){
   x.textAlign="center"; x.fillStyle="#6b1f45"; x.font="500 44px 'Bodoni Moda',Georgia,serif"; x.fillText("Notes",nx+nw/2,top+8);
   x.fillStyle="#3a0f2a"; x.font="300 23px Jost,Arial,sans-serif"; let ny=top+66;
   ["Appointment times are 3 hours apart.",
-   "Pick a date and a time, then send your request. Your slot is confirmed once Jen replies.","If your preferred date is fully booked, message Jen on Instagram. Thank you!"]
+   "To book, message Jen on Instagram with your preferred date and time. Your slot is confirmed once Jen replies.","Thank you!"]
   .forEach(t=>{wrapText(x,t,nw-56).forEach(l=>{x.fillText(l,nx+nw/2,ny);ny+=32});ny+=20});
   x.fillStyle="#3a0f2a"; x.font="400 30px Jost,Arial,sans-serif"; x.fillText("Book here: "+CONFIG.site.replace(/^https?:\/\//,"").replace(/\/$/,""),W/2,H-112);
   x.fillStyle="#8f6a2e"; x.font="500 34px Jost,Arial,sans-serif"; x.fillText("@"+CONFIG.instagram,W/2,H-62);
@@ -361,45 +314,8 @@ $("saveCal").onclick=async()=>{const c=await monthCard(),a=document.createElemen
   a.href=c.toDataURL("image/png"); a.download="calendar-"+view.toLocaleDateString("en",{month:"long",year:"numeric"}).replace(" ","-")+".png"; a.click()};
 
 /* ---------- Save the receipt as a picture ---------- */
-function rcInfo(){
-  const who=$("who").value.trim(),ph=$("phone").value.trim(),nt=$("msg").value.trim();
-  const rows=[["Date",date.toLocaleDateString("en",{weekday:"long",month:"long",day:"numeric"})],["Time",time],["Name",who||"-"],["Mobile",ph||"-"]];
-  if(nt)rows.push(["Notes",nt]);
-  return {rows,ref:"NBJ-"+pad(date.getMonth()+1)+pad(date.getDate())+"-"+time.replace(/\D/g,"").slice(0,4)};
-}
 function wrapText(x,t,w){const out=[];let line="";String(t).split(" ").forEach(word=>{const test=line?line+" "+word:word;
   if(x.measureText(test).width>w&&line){out.push(line);line=word}else line=test});out.push(line);return out}
-async function receiptCard(){
-  await Promise.all([document.fonts.load("500 60px 'Bodoni Moda'"),document.fonts.load("400 30px Jost"),document.fonts.load("300 30px Jost")]);
-  const {rows,ref}=rcInfo(), W=1080,H=1350, c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d");
-  const bg=x.createLinearGradient(0,0,W,H); bg.addColorStop(0,"#fff4f6"); bg.addColorStop(1,"#f3b9c6"); x.fillStyle=bg; x.fillRect(0,0,W,H);
-  const px=140,pw=800,pad2=60,valW=430; x.font="500 34px Jost,Arial,sans-serif";
-  const all=[...rows,["Ref",ref],["Status","Pending"]].map(([a,b])=>[a,wrapText(x,b,valW)]);
-  const ph=330+all.reduce((s,r)=>s+r[1].length*44+22,0)+190, y0=Math.max(70,(H-ph-40)/2);
-  x.save(); x.shadowColor="rgba(107,31,69,.35)"; x.shadowBlur=40; x.shadowOffsetY=18; x.fillStyle="#fffdf9";
-  x.beginPath(); x.moveTo(px,y0); x.lineTo(px+pw,y0); x.lineTo(px+pw,y0+ph);
-  for(let i=0;i<pw/32;i++){x.lineTo(px+pw-16-32*i,y0+ph+22);x.lineTo(px+pw-32*(i+1),y0+ph)} x.closePath(); x.fill(); x.restore();
-  x.textAlign="center"; x.fillStyle="#6b1f45"; x.font="500 74px 'Bodoni Moda',Georgia,serif"; x.fillText(CONFIG.studio,W/2,y0+110);
-  x.fillStyle="#3a0f2a"; x.font="300 28px Jost,Arial,sans-serif"; if("letterSpacing" in x)x.letterSpacing="6px"; x.fillText("BOOKING RECEIPT",W/2,y0+160); if("letterSpacing" in x)x.letterSpacing="0px";
-  const dash=y=>{x.setLineDash([14,10]);x.strokeStyle="#f3b9c6";x.lineWidth=3;x.beginPath();x.moveTo(px+pad2,y);x.lineTo(px+pw-pad2,y);x.stroke();x.setLineDash([])};
-  dash(y0+200); let y=y0+270;
-  all.forEach(([a,lines],i)=>{
-    if(a==="Ref"){dash(y-34);y+=20}
-    x.textAlign="left"; x.fillStyle="#3a0f2a"; x.font="300 32px Jost,Arial,sans-serif"; x.fillText(a,px+pad2,y);
-    const lw=x.measureText(a).width; x.font="500 34px Jost,Arial,sans-serif"; x.textAlign="right";
-    lines.forEach((t,j)=>x.fillText(t,px+pw-pad2,y+j*44));
-    x.setLineDash([2,9]);x.strokeStyle="#f3b9c6";x.lineWidth=3;x.beginPath();x.moveTo(px+pad2+lw+16,y-8);
-    x.lineTo(px+pw-pad2-x.measureText(lines[0]).width-16,y-8);x.stroke();x.setLineDash([]);
-    y+=lines.length*44+22});
-  dash(y-4); x.textAlign="center"; x.fillStyle="#3a0f2a"; x.font="300 28px Jost,Arial,sans-serif";
-  wrapText(x,"Thank you! Your slot is confirmed once Jen replies.",pw-2*pad2).forEach((t,i)=>x.fillText(t,W/2,y+52+i*38));
-  x.fillStyle="#c9a063"; x.font="500 30px Jost,Arial,sans-serif"; x.fillText("@"+CONFIG.instagram,W/2,y+135);
-  return {c,ref};
-}
-$("saveRc").onclick=async()=>{
-  if(!(date&&time)){return}
-  const {c,ref}=await receiptCard(), a=document.createElement("a"); a.href=c.toDataURL("image/png"); a.download="receipt-"+ref+".png"; a.click();
-};
 
 /* ---------- Owner tools ---------- */
 function saveEdit(){
@@ -416,7 +332,7 @@ function openEdit(quiet){
   [...CONFIG.hours.filter(h=>!(CONFIG.booked[k]||[]).includes(h)),...CONFIG.hours.filter(h=>(CONFIG.booked[k]||[]).includes(h))].forEach(h=>{const b=document.createElement("button"); b.className="slot x"; b.textContent=h;
     b.setAttribute("aria-pressed",(CONFIG.booked[k]||[]).includes(h));
     b.onclick=()=>{const a=CONFIG.booked[k]=CONFIG.booked[k]||[],i=a.indexOf(h);
-      if(i<0){a.push(h);time=h;saveEdit();$("s4").hidden=false;update()}else{a.splice(i,1);saveEdit();$("s4").hidden=true}};
+      if(i<0)a.push(h);else a.splice(i,1);saveEdit()};
     w.append(b)});
   if(!quiet)$("edit").scrollIntoView({behavior:"smooth",block:"start"});
 }
