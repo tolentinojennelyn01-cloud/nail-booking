@@ -232,7 +232,7 @@ const nice=()=>date.toLocaleDateString("en",{weekday:"long",month:"long",day:"nu
 
 const shortT=h=>h.replace(":00 ","");
 function cellHtml(dt,d,hide){const bk=CONFIG.booked[key(dt)]||[];
-  return `<span class="dn">${d}</span>`+(hide?(hide==="off"?(OWNER?`<span class="tms"><i style="color:#c2336b;font-weight:600">${offNote(dt)?"OFF":"FULL"}</i>${hoursOf(dt).map(h=>`<i${bk.includes(h)?' class="x"':''}>${shortT(h)}</i>`).join("")}</span>`:`<span class="tms">${(hoursOf(dt).length?hoursOf(dt):presetsSorted()).map(h=>`<i class="x">${shortT(h)}</i>`).join("")}</span>`):""):`<span class="tms">${hoursOf(dt).map(h=>`<i${bk.includes(h)?' class="x"':''}>${shortT(h)}</i>`).join("")}</span>`)}
+  return `<span class="dn">${d}</span>`+(hide?(hide==="off"?(OWNER?`<span class="tms">${hoursOf(dt).map(h=>`<i${bk.includes(h)?' class="x"':''}>${shortT(h)}</i>`).join("")}</span>`:`<span class="tms">${(hoursOf(dt).length?hoursOf(dt):presetsSorted()).map(h=>`<i class="x">${shortT(h)}</i>`).join("")}</span>`):""):`<span class="tms">${hoursOf(dt).map(h=>`<i${bk.includes(h)?' class="x"':''}>${shortT(h)}</i>`).join("")}</span>`)}
 function drawCal(){
   const g=$("cal"); g.innerHTML="";
   ["S","M","T","W","T","F","S"].forEach(d=>{const e=document.createElement("div");e.className="dow";e.textContent=d;g.append(e)});
