@@ -232,7 +232,7 @@ const nice=()=>date.toLocaleDateString("en",{weekday:"long",month:"long",day:"nu
 
 const shortT=h=>h.replace(":00 ","");
 function cellHtml(dt,d,hide){const bk=CONFIG.booked[key(dt)]||[];
-  return `<span class="dn">${d}</span>`+(hide?(hide==="off"?`<span class="tms">${(hoursOf(dt).length?hoursOf(dt):presetsSorted()).map(h=>`<i class="x">${shortT(h)}</i>`).join("")}</span>`:""):`<span class="tms">${hoursOf(dt).map(h=>`<i${bk.includes(h)?' class="x"':''}>${shortT(h)}</i>`).join("")}</span>`)}
+  return `<span class="dn">${d}</span>`+(hide?(hide==="off"?(OWNER?`<span class="tms"><i style="color:#c2336b;font-weight:600">${offNote(dt)?"OFF":"FULL"}</i>${hoursOf(dt).map(h=>`<i${bk.includes(h)?' class="x"':''}>${shortT(h)}</i>`).join("")}</span>`:`<span class="tms">${(hoursOf(dt).length?hoursOf(dt):presetsSorted()).map(h=>`<i class="x">${shortT(h)}</i>`).join("")}</span>`):""):`<span class="tms">${hoursOf(dt).map(h=>`<i${bk.includes(h)?' class="x"':''}>${shortT(h)}</i>`).join("")}</span>`)}
 function drawCal(){
   const g=$("cal"); g.innerHTML="";
   ["S","M","T","W","T","F","S"].forEach(d=>{const e=document.createElement("div");e.className="dow";e.textContent=d;g.append(e)});
@@ -366,7 +366,7 @@ function saveEdit(){
 function openEdit(quiet){
   if(!SIGNED){$("login").hidden=false;$("edit").scrollIntoView({behavior:"smooth",block:"start"});return}
   const k=key(date), isOff=CONFIG.offDays[k]!==undefined;
-  $("eDay").hidden=false; $("eDate").textContent=nice(); $("eNote").value=isOff?CONFIG.offDays[k]:"";
+  $("eDay").hidden=false; $("eDate").textContent=nice()+(isOff?" · marked not available (clients see all times crossed out)":""); $("eNote").value=isOff?CONFIG.offDays[k]:"";
   $("eOff").textContent=isOff?"Update note":"Mark as not available"; $("eOn").hidden=!isOff;
   const sortP=()=>CONFIG.presets.sort((a,b)=>tmin(a)-tmin(b)), have=CONFIG.times[k]||[];
   const pre=$("pre"); pre.innerHTML=""; sortP().forEach(h=>{const b=document.createElement("button"); const isB=(CONFIG.booked[k]||[]).includes(h); b.className=isB?"slot x":"slot"; b.textContent=h; b.setAttribute("aria-pressed",isB||have.includes(h));
