@@ -259,7 +259,7 @@ $("next").onclick=()=>{view.setMonth(view.getMonth()+1);drawCal()};
 
 
 /* ---------- Pretty pictures for Instagram (pink "Bookings Open" style) ---------- */
-const PK={deep:"#a65b6b",mid:"#c98b84",soft:"#efcfc7",pale:"#fbefea",ink:"#4b2230"};
+const PK={deep:"#c2336b",mid:"#e0719a",soft:"#f7b8cc",pale:"#ffe9f0",ink:"#4a1030"};
 const loadFonts=()=>Promise.all([document.fonts.load("60px 'Great Vibes'"),document.fonts.load("500 30px Jost"),document.fonts.load("400 30px Jost")]);
 const sp=(x,px)=>{try{x.letterSpacing=px+"px"}catch(e){}};
 function fuzzy(x,t,cx,cy,size){x.save();x.textAlign="center";x.font=size+"px Pacifico,cursive";x.lineJoin="round";
@@ -271,16 +271,18 @@ const rngOf=seed=>()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>
 function star(x,cx,cy,r){x.save();x.fillStyle="#fffaf6";x.strokeStyle="rgba(190,110,100,.7)";x.lineWidth=1.3;x.shadowColor="rgba(255,255,255,.95)";x.shadowBlur=r*.9;const q=r*.13;
   x.beginPath();x.moveTo(cx,cy-r);x.quadraticCurveTo(cx+q,cy-q,cx+r,cy);x.quadraticCurveTo(cx+q,cy+q,cx,cy+r);x.quadraticCurveTo(cx-q,cy+q,cx-r,cy);x.quadraticCurveTo(cx-q,cy-q,cx,cy-r);x.fill();x.stroke();x.restore()}
 function furBg(x,W,H){const r=rngOf(5),g=x.createLinearGradient(0,0,W,H);
-  [[0,"#f6d8ce"],[.22,"#e8aa9b"],[.45,"#f9ded4"],[.7,"#d99588"],[1,"#f0c3b5"]].forEach(([o,c])=>g.addColorStop(o,c));x.fillStyle=g;x.fillRect(0,0,W,H);
+  [[0,"#f9cdc3"],[.22,"#e88a92"],[.45,"#fcd3c9"],[.7,"#d96a80"],[1,"#f4a9a6"]].forEach(([o,c])=>g.addColorStop(o,c));x.fillStyle=g;x.fillRect(0,0,W,H);
   for(let i=0;i<6;i++){x.save();x.translate(r()*W,r()*H);x.rotate(-.65);const q=x.createLinearGradient(-190,0,190,0);q.addColorStop(0,"rgba(255,255,255,0)");q.addColorStop(.5,"rgba(255,255,255,.2)");q.addColorStop(1,"rgba(255,255,255,0)");x.fillStyle=q;x.fillRect(-190,-H*1.5,380,H*3);x.restore()}
   for(let i=0;i<1900;i++){x.fillStyle="rgba(255,255,255,"+(.12+r()*.5)+")";x.beginPath();x.arc(r()*W,r()*H,.5+r()*1.4,0,6.283);x.fill()}
   for(let i=0;i<14;i++)star(x,r()*W,r()*H,7+r()*13)}
 function pinkBg(x,W,H){furBg(x,W,H)}
 function furText(x,t,cx,cy,size){x.save();x.font=size+"px 'Great Vibes',cursive";x.textAlign="center";const tw=x.measureText(t).width;
   x.lineJoin="round";x.strokeStyle="rgba(255,248,244,.9)";x.lineWidth=size*.04;x.shadowColor="rgba(110,45,55,.35)";x.shadowBlur=size*.07;x.shadowOffsetY=size*.035;x.strokeText(t,cx,cy);
-  const g=x.createLinearGradient(cx-tw/2,cy-size*.8,cx+tw/2,cy+size*.3);[[0,"#d99a8d"],[.25,"#a8566a"],[.5,"#e8b3a6"],[.75,"#8a3f55"],[1,"#c9847c"]].forEach(([o,c])=>g.addColorStop(o,c));
+  const g=x.createLinearGradient(cx-tw/2,cy-size*.8,cx+tw/2,cy+size*.3);[[0,"#f0929f"],[.25,"#c7255f"],[.5,"#f7a9b5"],[.75,"#9c1651"],[1,"#e05a7c"]].forEach(([o,c])=>g.addColorStop(o,c));
   x.fillStyle=g;x.fillText(t,cx,cy);x.restore();
   star(x,cx-tw/2-6,cy-size*.62,size*.1);star(x,cx+tw/2+4,cy-size*.4,size*.075);star(x,cx+tw*.28,cy+size*.22,size*.055)}
+function scribble(x,x0,x1,y,w){const r=rngOf(Math.round(x0*7+y*3));x.save();x.strokeStyle="#e0183f";x.lineCap=x.lineJoin="round";x.lineWidth=w;
+  for(let p=0;p<2;p++){x.beginPath();x.moveTo(x0,y+(p?3:-3)+(r()-.5)*3);for(let i=1;i<=3;i++)x.quadraticCurveTo(x0+(x1-x0)*(i-.5)/3,y+(p?-5:5)+(r()-.5)*4,x0+(x1-x0)*i/3,y+(p?4:-4)+(r()-.5)*3);x.stroke()}x.restore()}
 function heart(x,cx,cy,s,col){x.save();x.fillStyle=col;x.beginPath();x.moveTo(cx,cy+s*.9);x.bezierCurveTo(cx-s*1.5,cy-s*.1,cx-s*.6,cy-s*1.1,cx,cy-s*.35);x.bezierCurveTo(cx+s*.6,cy-s*1.1,cx+s*1.5,cy-s*.1,cx,cy+s*.9);x.fill();x.restore()}
 function foot(x,W,y,dark,maxW){maxW=maxW||W-160;const u=CONFIG.site.replace(/^https?:\/\//,"").replace(/\/$/,"").toUpperCase(),h="@"+CONFIG.instagram.toUpperCase();
   x.textAlign="center";let f=28;sp(x,3);do{x.font="500 "+f+"px Jost,Arial,sans-serif";f--}while(x.measureText(u).width>maxW&&f>12);
@@ -294,18 +296,18 @@ async function makeCard(W,H,maxDays){
   x.fillStyle=PK.deep; x.font="500 34px Jost,Arial,sans-serif"; sp(x,6); x.fillText(CONFIG.studio.toUpperCase(),W/2,tall?205:158); sp(x,0);
   furText(x,"Book Now",W/2,tall?410:305,tall?215:175);
   const py=tall?500:380, ph=H-py-(tall?290:200), px=70, pw=W-140, rh=ph/7;
-  x.fillStyle="#fffaf7"; x.beginPath(); x.roundRect(px,py,pw,ph,44); x.fill(); x.strokeStyle="#d9a99c"; x.lineWidth=2.5; x.beginPath(); x.roundRect(px+14,py+14,pw-28,ph-28,34); x.stroke();
+  x.fillStyle="#fffaf7"; x.beginPath(); x.roundRect(px,py,pw,ph,44); x.fill(); x.strokeStyle="#e0869c"; x.lineWidth=2.5; x.beginPath(); x.roundRect(px+14,py+14,pw-28,ph-28,34); x.stroke();
   for(let i=0;i<7;i++){const dt=new Date(ws); dt.setDate(ws.getDate()+i); const k=key(dt);
     const y=py+i*rh, gone=dt<today||dt>last, hrs=hoursOf(dt), soon=!gone&&!offNote(dt)&&!hrs.length, off=gone||offNote(dt)||soon, bk=CONFIG.booked[k]||[], mid=y+rh/2;
-    x.textAlign="center"; x.fillStyle=off?"#cdb0a8":PK.deep; x.font="500 "+(tall?36:30)+"px Jost,Arial,sans-serif"; sp(x,3);
+    x.textAlign="center"; x.fillStyle=off?"#d1a3b0":PK.deep; x.font="500 "+(tall?36:30)+"px Jost,Arial,sans-serif"; sp(x,3);
     x.fillText(dt.toLocaleDateString("en",{weekday:"short"}).toUpperCase(),px+130,mid-4); x.font="400 "+(tall?34:28)+"px Jost,Arial,sans-serif"; sp(x,0);
     x.fillText(dt.getDate(),px+130,mid+(tall?40:34));
     x.strokeStyle=PK.soft; x.lineWidth=3; x.setLineDash([2,8]); x.beginPath(); x.moveTo(px+250,y+14); x.lineTo(px+250,y+rh-14); x.stroke(); x.setLineDash([]);
     x.textAlign="left"; const tx=px+300;
-    if(off){heart(x,tx+16,mid,16,PK.soft); x.fillStyle="#cdb0a8"; x.font="500 30px Jost,Arial,sans-serif"; sp(x,4); x.fillText(soon?"NOT OPEN YET":"DAY OFF",tx+52,mid+10); sp(x,0)}
+    if(off){heart(x,tx+16,mid,16,PK.soft); x.fillStyle="#d1a3b0"; x.font="500 30px Jost,Arial,sans-serif"; sp(x,4); x.fillText(soon?"NOT OPEN YET":"DAY OFF",tx+52,mid+10); sp(x,0)}
     else{x.fillStyle=PK.deep; x.font="500 "+(tall?32:28)+"px Jost,Arial,sans-serif"; sp(x,4); x.fillText(openSlots(dt).length?"AVAILABLE":"FULLY BOOKED",tx,mid-(tall?6:2)); sp(x,0);
       x.font="400 "+(tall?30:26)+"px Jost,Arial,sans-serif"; let cx=tx; const ty=mid+(tall?38:30);
-      hrs.forEach(h=>{const t=shortT(h),w=x.measureText(t).width, b=bk.includes(h); x.fillStyle=b?"#c0224f":PK.ink; x.fillText(t,cx,ty); if(b)x.fillRect(cx-3,ty-11,w+6,4); cx+=w+26})}
+      hrs.forEach(h=>{const t=shortT(h),w=x.measureText(t).width, b=bk.includes(h); heart(x,cx+9,ty-10,9,PK.mid); x.fillStyle=PK.ink; x.fillText(t,cx+28,ty); if(b)scribble(x,cx+16,cx+34+w,ty-(tall?11:9),6); cx+=w+60})}
   }
   x.textAlign="center"; x.fillStyle=PK.ink; x.font="500 40px Jost,Arial,sans-serif"; sp(x,10); x.fillText("DM TO BOOK",W/2,H-(tall?200:130)); sp(x,0);
   foot(x,W,H-(tall?130:80),PK.ink); return c;
@@ -322,8 +324,8 @@ async function monthCard(){
   const n=new Date(view.getFullYear(),view.getMonth()+1,0).getDate(), first=new Date(view.getFullYear(),view.getMonth(),1).getDay(), rows=Math.ceil((first+n)/7);
   const W=1080,rh=158,gx=125,cw=(W-2*gx)/7,top=640,H=top+rows*rh+400,c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d"); pinkBg(x,W,H);
   const M=80; x.save(); x.shadowColor="rgba(110,20,60,.4)"; x.shadowBlur=28; x.shadowOffsetY=10;
-  [["#f3e2dc",.022],["#cf8f84",-.014]].forEach(([col,rot])=>{x.save();x.translate(W/2,H/2);x.rotate(rot);x.fillStyle=col;x.fillRect(-(W-2*M)/2,-(H-2*M)/2,W-2*M,H-2*M);x.restore()});
-  x.fillStyle="#fffaf7"; x.fillRect(M,M,W-2*M,H-2*M); x.restore(); x.strokeStyle="#d9a99c"; x.lineWidth=2.5; x.strokeRect(M+16,M+16,W-2*M-32,H-2*M-32); x.lineWidth=1; x.strokeRect(M+25,M+25,W-2*M-50,H-2*M-50); x.save(); x.translate(0,30);
+  [["#f8dfe1",.022],["#d9627e",-.014]].forEach(([col,rot])=>{x.save();x.translate(W/2,H/2);x.rotate(rot);x.fillStyle=col;x.fillRect(-(W-2*M)/2,-(H-2*M)/2,W-2*M,H-2*M);x.restore()});
+  x.fillStyle="#fffaf7"; x.fillRect(M,M,W-2*M,H-2*M); x.restore(); x.strokeStyle="#e0869c"; x.lineWidth=2.5; x.strokeRect(M+16,M+16,W-2*M-32,H-2*M-32); x.lineWidth=1; x.strokeRect(M+25,M+25,W-2*M-50,H-2*M-50); x.save(); x.translate(0,30);
   x.textAlign="center"; x.fillStyle=PK.ink; x.font="500 26px Jost,Arial,sans-serif"; sp(x,12); x.fillText(CONFIG.studio.toUpperCase(),W/2,125); sp(x,0);
   x.fillStyle=PK.soft; x.fillRect(gx,152,W-2*gx,2);
   const mo=view.toLocaleDateString("en",{month:"long"}).toUpperCase(); x.font="500 56px Jost,Arial,sans-serif"; sp(x,6);
@@ -331,15 +333,15 @@ async function monthCard(){
   furText(x,"Bookings",W/2,440,235);
   x.textAlign="center"; x.fillStyle=PK.ink; x.font="500 44px Jost,Arial,sans-serif"; sp(x,22); x.fillText("OPEN",W/2+11,505); sp(x,0);
   x.font="500 25px Jost,Arial,sans-serif"; x.fillStyle=PK.ink; sp(x,2); ["SUN","MON","TUE","WED","THU","FRI","SAT"].forEach((d,i)=>x.fillText(d,gx+i*cw+cw/2,top-24)); sp(x,0);
-  for(let r=0;r<rows;r++){ if(r%2===0){x.fillStyle="#fbefea";x.beginPath();x.roundRect(gx-12,top+r*rh+4,W-2*gx+24,rh-8,24);x.fill()} }
+  for(let r=0;r<rows;r++){ if(r%2===0){x.fillStyle="#ffe9ef";x.beginPath();x.roundRect(gx-12,top+r*rh+4,W-2*gx+24,rh-8,24);x.fill()} }
   x.strokeStyle="#ecd9d3"; x.lineWidth=2; for(let i=1;i<7;i++){x.beginPath();x.moveTo(gx+i*cw,top+6);x.lineTo(gx+i*cw,top+rows*rh-6);x.stroke()}
   for(let d=1;d<=n;d++){
     const dt=new Date(view.getFullYear(),view.getMonth(),d), i=first+d-1, x0=gx+(i%7)*cw, y0=top+Math.floor(i/7)*rh;
     const hrs=hoursOf(dt), gone=dt<today||dt>last, off=gone||offNote(dt)||(hrs.length&&!openSlots(dt).length), bk=CONFIG.booked[key(dt)]||[];
-    x.textAlign="right"; x.fillStyle=off?"#cdb0a8":PK.ink; x.font="500 28px Jost,Arial,sans-serif"; x.fillText(d,x0+cw-12,y0+42);
-    if(off){x.strokeStyle="#cdb0a8";x.lineWidth=2;x.beginPath();x.moveTo(x0+30,y0+60);x.lineTo(x0+cw-30,y0+rh-26);x.moveTo(x0+cw-30,y0+60);x.lineTo(x0+30,y0+rh-26);x.stroke();continue}
+    x.textAlign="right"; x.fillStyle=off?"#d1a3b0":PK.ink; x.font="500 28px Jost,Arial,sans-serif"; x.fillText(d,x0+cw-12,y0+42);
+    if(off){x.strokeStyle="#d1a3b0";x.lineWidth=2;x.beginPath();x.moveTo(x0+30,y0+60);x.lineTo(x0+cw-30,y0+rh-26);x.moveTo(x0+cw-30,y0+60);x.lineTo(x0+30,y0+rh-26);x.stroke();continue}
     x.textAlign="left"; x.font="400 21px Jost,Arial,sans-serif";
-    hrs.forEach((h,k)=>{const t=shortT(h),ty=y0+68+k*24,b=bk.includes(h); x.fillStyle=b?"#c0224f":PK.ink; x.fillText(t,x0+14,ty); if(b)x.fillRect(x0+11,ty-8,x.measureText(t).width+6,3)});
+    hrs.forEach((h,k)=>{const t=shortT(h),ty=y0+68+k*24,b=bk.includes(h); heart(x,x0+17,ty-8,6,PK.mid); x.fillStyle=PK.ink; x.fillText(t,x0+30,ty); if(b)scribble(x,x0+10,x0+36+x.measureText(t).width,ty-7,4.5)});
   }
   const ny=top+rows*rh+60; x.textAlign="center"; x.fillStyle=PK.deep; x.font="500 24px Jost,Arial,sans-serif"; sp(x,1);
   x.fillText("APPOINTMENTS ARE 3 HOURS APART",W/2,ny); x.fillText("MESSAGE JEN ON INSTAGRAM TO BOOK",W/2,ny+34); sp(x,0);
