@@ -232,7 +232,7 @@ const nice=()=>date.toLocaleDateString("en",{weekday:"long",month:"long",day:"nu
 
 const shortT=h=>h.replace(":00 ","");
 function cellHtml(dt,d,hide){const bk=CONFIG.booked[key(dt)]||[];
-  return `<span class="dn">${d}</span>`+(hide?(hide==="off"?`<span class="tms" style="color:#e58aa6;font-size:1.1rem">♥</span><span class="tms">OFF</span>`:""):`<span class="tms">${hoursOf(dt).map(h=>`<i${bk.includes(h)?' class="x"':''}>${shortT(h)}</i>`).join("")}</span>`)}
+  return `<span class="dn">${d}</span>`+(hide?(hide==="off"?`<span class="tms">${(hoursOf(dt).length?hoursOf(dt):presetsSorted()).map(h=>`<i class="x">${shortT(h)}</i>`).join("")}</span>`:""):`<span class="tms">${hoursOf(dt).map(h=>`<i${bk.includes(h)?' class="x"':''}>${shortT(h)}</i>`).join("")}</span>`)}
 function drawCal(){
   const g=$("cal"); g.innerHTML="";
   ["S","M","T","W","T","F","S"].forEach(d=>{const e=document.createElement("div");e.className="dow";e.textContent=d;g.append(e)});
@@ -281,6 +281,8 @@ function furText(x,t,cx,cy,size){x.save();x.font=size+"px 'Great Vibes',cursive"
   const g=x.createLinearGradient(cx-tw/2,cy-size*.8,cx+tw/2,cy+size*.3);[[0,"#f0929f"],[.25,"#c7255f"],[.5,"#f7a9b5"],[.75,"#9c1651"],[1,"#e05a7c"]].forEach(([o,c])=>g.addColorStop(o,c));
   x.fillStyle=g;x.fillText(t,cx,cy);x.restore();
   star(x,cx-tw/2-6,cy-size*.62,size*.1);star(x,cx+tw/2+4,cy-size*.4,size*.075);star(x,cx+tw*.28,cy+size*.22,size*.055)}
+const presetsSorted=()=>CONFIG.presets.slice().sort((a,b)=>tmin(a)-tmin(b));
+const showTimes=dt=>{const h=hoursOf(dt);return{list:h.length?h:presetsSorted(),all:dt<today||dt>last||!!offNote(dt)||!h.length}};
 function scribble(x,x0,x1,y,w){const r=rngOf(Math.round(x0*7+y*3));x.save();x.strokeStyle="#e0183f";x.lineCap=x.lineJoin="round";x.lineWidth=w;
   for(let p=0;p<2;p++){x.beginPath();x.moveTo(x0,y+(p?3:-3)+(r()-.5)*3);for(let i=1;i<=3;i++)x.quadraticCurveTo(x0+(x1-x0)*(i-.5)/3,y+(p?-5:5)+(r()-.5)*4,x0+(x1-x0)*i/3,y+(p?4:-4)+(r()-.5)*3);x.stroke()}x.restore()}
 function heart(x,cx,cy,s,col){x.save();x.fillStyle=col;x.beginPath();x.moveTo(cx,cy+s*.9);x.bezierCurveTo(cx-s*1.5,cy-s*.1,cx-s*.6,cy-s*1.1,cx,cy-s*.35);x.bezierCurveTo(cx+s*.6,cy-s*1.1,cx+s*1.5,cy-s*.1,cx,cy+s*.9);x.fill();x.restore()}
@@ -298,16 +300,15 @@ async function makeCard(W,H,maxDays){
   const py=tall?500:380, ph=H-py-(tall?290:200), px=70, pw=W-140, rh=ph/7;
   x.fillStyle="#fffaf7"; x.beginPath(); x.roundRect(px,py,pw,ph,44); x.fill(); x.strokeStyle="#e0869c"; x.lineWidth=2.5; x.beginPath(); x.roundRect(px+14,py+14,pw-28,ph-28,34); x.stroke();
   for(let i=0;i<7;i++){const dt=new Date(ws); dt.setDate(ws.getDate()+i); const k=key(dt);
-    const y=py+i*rh, gone=dt<today||dt>last, hrs=hoursOf(dt), soon=!gone&&!offNote(dt)&&!hrs.length, off=gone||offNote(dt)||soon, bk=CONFIG.booked[k]||[], mid=y+rh/2;
-    x.textAlign="center"; x.fillStyle=off?"#d1a3b0":PK.deep; x.font="500 "+(tall?36:30)+"px Jost,Arial,sans-serif"; sp(x,3);
+    const y=py+i*rh, st=showTimes(dt), hrs=st.list, off=st.all, bk=CONFIG.booked[k]||[], mid=y+rh/2;
+    x.textAlign="center"; x.fillStyle=PK.deep; x.font="500 "+(tall?36:30)+"px Jost,Arial,sans-serif"; sp(x,3);
     x.fillText(dt.toLocaleDateString("en",{weekday:"short"}).toUpperCase(),px+130,mid-4); x.font="400 "+(tall?34:28)+"px Jost,Arial,sans-serif"; sp(x,0);
     x.fillText(dt.getDate(),px+130,mid+(tall?40:34));
     x.strokeStyle=PK.soft; x.lineWidth=3; x.setLineDash([2,8]); x.beginPath(); x.moveTo(px+250,y+14); x.lineTo(px+250,y+rh-14); x.stroke(); x.setLineDash([]);
     x.textAlign="left"; const tx=px+300;
-    if(off){heart(x,tx+16,mid,16,PK.soft); x.fillStyle="#d1a3b0"; x.font="500 30px Jost,Arial,sans-serif"; sp(x,4); x.fillText(soon?"NOT OPEN YET":"DAY OFF",tx+52,mid+10); sp(x,0)}
-    else{x.fillStyle=PK.deep; x.font="500 "+(tall?32:28)+"px Jost,Arial,sans-serif"; sp(x,4); x.fillText(openSlots(dt).length?"AVAILABLE":"FULLY BOOKED",tx,mid-(tall?6:2)); sp(x,0);
+    {x.fillStyle=PK.deep; x.font="500 "+(tall?32:28)+"px Jost,Arial,sans-serif"; sp(x,4); x.fillText(!off&&openSlots(dt).length?"AVAILABLE":"FULLY BOOKED",tx,mid-(tall?6:2)); sp(x,0);
       x.font="400 "+(tall?30:26)+"px Jost,Arial,sans-serif"; let cx=tx; const ty=mid+(tall?38:30);
-      hrs.forEach(h=>{const t=shortT(h),w=x.measureText(t).width, b=bk.includes(h); heart(x,cx+9,ty-10,9,PK.mid); x.fillStyle=PK.ink; x.fillText(t,cx+28,ty); if(b)scribble(x,cx+16,cx+34+w,ty-(tall?11:9),6); cx+=w+60})}
+      hrs.forEach(h=>{const t=shortT(h),w=x.measureText(t).width, b=off||bk.includes(h); heart(x,cx+9,ty-10,9,PK.mid); x.fillStyle=PK.ink; x.fillText(t,cx+28,ty); if(b)scribble(x,cx+16,cx+34+w,ty-(tall?11:9),6); cx+=w+60})}
   }
   x.textAlign="center"; x.fillStyle=PK.ink; x.font="500 40px Jost,Arial,sans-serif"; sp(x,10); x.fillText("DM TO BOOK",W/2,H-(tall?200:130)); sp(x,0);
   foot(x,W,H-(tall?130:80),PK.ink); return c;
@@ -337,11 +338,10 @@ async function monthCard(){
   x.strokeStyle="#ecd9d3"; x.lineWidth=2; for(let i=1;i<7;i++){x.beginPath();x.moveTo(gx+i*cw,top+6);x.lineTo(gx+i*cw,top+rows*rh-6);x.stroke()}
   for(let d=1;d<=n;d++){
     const dt=new Date(view.getFullYear(),view.getMonth(),d), i=first+d-1, x0=gx+(i%7)*cw, y0=top+Math.floor(i/7)*rh;
-    const hrs=hoursOf(dt), gone=dt<today||dt>last, off=gone||offNote(dt)||(hrs.length&&!openSlots(dt).length), bk=CONFIG.booked[key(dt)]||[];
-    x.textAlign="right"; x.fillStyle=off?"#d1a3b0":PK.ink; x.font="500 28px Jost,Arial,sans-serif"; x.fillText(d,x0+cw-12,y0+42);
-    if(off){x.strokeStyle="#d1a3b0";x.lineWidth=2;x.beginPath();x.moveTo(x0+30,y0+60);x.lineTo(x0+cw-30,y0+rh-26);x.moveTo(x0+cw-30,y0+60);x.lineTo(x0+30,y0+rh-26);x.stroke();continue}
+    const st=showTimes(dt), hrs=st.list, off=st.all, bk=CONFIG.booked[key(dt)]||[];
+    x.textAlign="right"; x.fillStyle=PK.ink; x.font="500 28px Jost,Arial,sans-serif"; x.fillText(d,x0+cw-12,y0+42);
     x.textAlign="left"; x.font="400 21px Jost,Arial,sans-serif";
-    hrs.forEach((h,k)=>{const t=shortT(h),ty=y0+68+k*24,b=bk.includes(h); heart(x,x0+17,ty-8,6,PK.mid); x.fillStyle=PK.ink; x.fillText(t,x0+30,ty); if(b)scribble(x,x0+10,x0+36+x.measureText(t).width,ty-7,4.5)});
+    hrs.forEach((h,k)=>{const t=shortT(h),ty=y0+68+k*24,b=off||bk.includes(h); heart(x,x0+17,ty-8,6,PK.mid); x.fillStyle=PK.ink; x.fillText(t,x0+30,ty); if(b)scribble(x,x0+10,x0+36+x.measureText(t).width,ty-7,4.5)});
   }
   const ny=top+rows*rh+60; x.textAlign="center"; x.fillStyle=PK.deep; x.font="500 24px Jost,Arial,sans-serif"; sp(x,1);
   x.fillText("APPOINTMENTS ARE 3 HOURS APART",W/2,ny); x.fillText("MESSAGE JEN ON INSTAGRAM TO BOOK",W/2,ny+34); sp(x,0);
