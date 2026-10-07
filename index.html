@@ -312,7 +312,7 @@ async function makeCard(W,H,maxDays){
     if(off){heart(x,tx+16,mid,16,PK.soft); x.fillStyle="#c9a9b6"; x.font="500 30px Jost,Arial,sans-serif"; sp(x,4); x.fillText(soon?"NOT OPEN YET":"DAY OFF",tx+52,mid+10); sp(x,0)}
     else{x.fillStyle=PK.deep; x.font="500 "+(tall?32:28)+"px Jost,Arial,sans-serif"; sp(x,4); x.fillText(openSlots(dt).length?"AVAILABLE":"FULLY BOOKED",tx,mid-(tall?6:2)); sp(x,0);
       x.font="400 "+(tall?30:26)+"px Jost,Arial,sans-serif"; let cx=tx; const ty=mid+(tall?38:30);
-      hrs.forEach(h=>{const t=shortT(h),w=x.measureText(t).width, b=bk.includes(h); x.fillStyle=b?"#c9a9b6":PK.ink; x.fillText(t,cx,ty); if(b)x.fillRect(cx-2,ty-10,w+4,3); cx+=w+26})}
+      hrs.forEach(h=>{const t=shortT(h),w=x.measureText(t).width, b=bk.includes(h); x.fillStyle=b?"#c0224f":PK.ink; x.fillText(t,cx,ty); if(b)x.fillRect(cx-3,ty-11,w+6,4); cx+=w+26})}
   }
   x.textAlign="center"; x.fillStyle="#fff"; x.font="500 40px Jost,Arial,sans-serif"; sp(x,10); x.fillText("DM TO BOOK",W/2,H-(tall?200:130)); sp(x,0);
   foot(x,W,H-(tall?130:80),"#fff"); x.fillStyle="#fff"; return c;
@@ -346,7 +346,7 @@ async function monthCard(){
     x.textAlign="right"; x.fillStyle=off?"#c9a9b6":PK.ink; x.font="500 28px Jost,Arial,sans-serif"; x.fillText(d,x0+cw-12,y0+42);
     if(off){x.strokeStyle="#c9a9b6";x.lineWidth=2;x.beginPath();x.moveTo(x0+30,y0+60);x.lineTo(x0+cw-30,y0+rh-26);x.moveTo(x0+cw-30,y0+60);x.lineTo(x0+30,y0+rh-26);x.stroke();continue}
     x.textAlign="left"; x.font="400 21px Jost,Arial,sans-serif";
-    hrs.forEach((h,k)=>{const t=shortT(h),ty=y0+68+k*24,b=bk.includes(h); x.fillStyle=b?"#c9a9b6":PK.ink; x.fillText(t,x0+14,ty); if(b)x.fillRect(x0+12,ty-7,x.measureText(t).width+4,2)});
+    hrs.forEach((h,k)=>{const t=shortT(h),ty=y0+68+k*24,b=bk.includes(h); x.fillStyle=b?"#c0224f":PK.ink; x.fillText(t,x0+14,ty); if(b)x.fillRect(x0+11,ty-8,x.measureText(t).width+6,3)});
   }
   const ny=top+rows*rh+60; x.textAlign="center"; x.fillStyle=PK.deep; x.font="500 24px Jost,Arial,sans-serif"; sp(x,1);
   x.fillText("APPOINTMENTS ARE 3 HOURS APART",W/2,ny); x.fillText("MESSAGE JEN ON INSTAGRAM TO BOOK",W/2,ny+34); sp(x,0);
