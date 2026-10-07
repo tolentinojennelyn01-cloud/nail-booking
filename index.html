@@ -6,17 +6,18 @@
 <meta name="theme-color" content="#fbe6ea">
 <title>Book Nails by Jen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,500;1,500&family=Pacifico&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,500;1,500&family=Great+Vibes&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root{--blush:#fbe6ea;--rose:#f3b9c6;--berry:#6b1f45;--plum:#3a0f2a;--gold:#c9a063;--gold-deep:#8f6a2e;--pearl:#fffaf7;--ink:#3a0f2a;--mauve:#8a6a78;--line:#ecc8d1;
+:root{--blush:#fbe6ea;--rose:#f3b9c6;--berry:#6b1f45;--plum:#3a0f2a;--gold:#d99a8d;--gold-deep:#a8566a;--pearl:#fffaf7;--ink:#3a0f2a;--mauve:#8a6a78;--line:#ecc8d1;
 --display:'Bodoni Moda',Georgia,serif;--body:'Jost','Helvetica Neue',Arial,sans-serif;color-scheme:light}
 *{box-sizing:border-box;margin:0}
 body{font-family:var(--body);color:var(--ink);line-height:1.55;min-height:100vh;-webkit-font-smoothing:antialiased;
 background:radial-gradient(60rem 38rem at 6% -6%,#fff 0,transparent 62%),radial-gradient(48rem 34rem at 104% 22%,rgba(243,185,198,.95) 0,transparent 62%),radial-gradient(40rem 28rem at -4% 100%,rgba(243,185,198,.6) 0,transparent 62%),var(--blush)}
 .wrap{max-width:640px;margin:0 auto;padding:56px 18px 80px}
 header{text-align:center;margin-bottom:38px;animation:rise .9s cubic-bezier(.2,.7,.2,1) both}
-h1{font-family:Pacifico,cursive;font-weight:500;font-size:clamp(3rem,12vw,5.2rem);line-height:.95;letter-spacing:-.02em;color:var(--berry)}
+h1{font-family:'Great Vibes',cursive;font-weight:500;font-size:clamp(3rem,12vw,5.2rem);line-height:.95;letter-spacing:-.02em;color:var(--berry)}
 h1 em{font-family:var(--body);text-transform:uppercase;letter-spacing:.32em;font-style:normal;display:block;font-size:.34em;letter-spacing:.01em;color:var(--gold-deep);margin-top:.55em;font-weight:500}
+h1{letter-spacing:0;font-weight:400;font-size:clamp(3.8rem,16vw,6.6rem);background:linear-gradient(120deg,#a8566a,#d99a8d 50%,#8a3f55);-webkit-background-clip:text;background-clip:text;color:transparent;padding:.1em 0}
 .orn{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:20px}
 .orn i{display:block;width:64px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
 .orn i:last-child{transform:scaleX(-1)}
@@ -34,7 +35,7 @@ section[hidden]{display:none}
 .svc b{display:block;font-weight:500}.svc span{font-size:.9rem;font-weight:300}
 .svc .p{color:var(--gold);font-weight:500;float:right}
 .svc[aria-pressed=true]{background:var(--berry);color:var(--pearl);border-color:var(--berry);box-shadow:0 10px 24px -10px var(--berry)}
-.svc[aria-pressed=true] .p{color:#ecd3a6}
+.svc[aria-pressed=true] .p{color:#f9dcd4}
 .mhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
 .mhead h2{margin:0;flex:1;text-align:center;font-style:italic;font-size:1.55rem}
 .nav{all:unset;cursor:pointer;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--line);background:var(--pearl);color:var(--berry);font-size:1.3rem;line-height:1;padding-bottom:3px;transition:background .2s,color .2s,border-color .2s}
@@ -65,7 +66,7 @@ box-shadow:inset 0 -7px 10px -5px rgba(107,31,69,.2),0 7px 12px -8px rgba(107,31
 .slots{display:flex;flex-wrap:wrap;gap:10px}
 .slot{all:unset;cursor:pointer;padding:11px 20px;border-radius:999px;border:1.5px solid var(--line);background:var(--pearl);font-size:.96rem;transition:border-color .18s,background .18s,box-shadow .18s}
 .slot:hover:not(:disabled):not([aria-pressed=true]){border-color:var(--berry);background:#fff}
-.slot[aria-pressed=true]{background:linear-gradient(180deg,#d9b57c,var(--gold));border-color:var(--gold);color:var(--plum);font-weight:500;box-shadow:0 8px 16px -10px var(--gold-deep)}
+.slot[aria-pressed=true]{background:linear-gradient(180deg,#efbfb3,var(--gold));border-color:var(--gold);color:var(--plum);font-weight:500;box-shadow:0 8px 16px -10px var(--gold-deep)}
 .slot:disabled{text-decoration:line-through;opacity:.4;cursor:default}
 .offmsg{padding:20px 22px;border-radius:20px;background:var(--blush);border:1px dashed var(--rose);font-family:var(--display);font-style:italic;font-size:1.15rem;color:var(--berry)}
 label{display:block;font-size:.88rem;font-weight:500;color:var(--berry);margin:16px 0 6px}
@@ -87,7 +88,7 @@ textarea{min-height:84px;resize:vertical}
 .cta{all:unset;box-sizing:border-box;cursor:pointer;display:block;width:100%;text-align:center;padding:16px;border-radius:999px;font-weight:500;font-size:1.05rem;letter-spacing:.02em;color:var(--pearl);background:linear-gradient(110deg,var(--berry),#a23a73 45%,var(--berry));background-size:200% 100%;transition:background-position .4s,transform .12s,filter .2s;box-shadow:0 1px 0 rgba(255,255,255,.25) inset,0 16px 26px -14px var(--berry)}
 .cta:hover{background-position:100% 0}
 .cta:active{transform:translateY(1px)}
-.cta.alt{background:linear-gradient(180deg,#dcb97f,var(--gold));color:var(--plum);box-shadow:0 1px 0 rgba(255,255,255,.45) inset;margin-top:12px}
+.cta.alt{background:linear-gradient(180deg,#f0c4b9,var(--gold));color:var(--plum);box-shadow:0 1px 0 rgba(255,255,255,.45) inset;margin-top:12px}
 .cta.alt:hover{filter:brightness(1.06)}
 .err{color:#b3123b;font-size:.9rem;margin-top:8px;min-height:1.2em}
 .note{text-align:center;font-size:.85rem;font-weight:300;margin-top:12px}
@@ -155,7 +156,7 @@ textarea{min-height:84px;resize:vertical}
       <input id="eNote" placeholder="Out of town, day off, family event…">
       <button class="cta" id="eOff">Mark as not available</button>
       <button class="cta alt" id="eOn" hidden>Mark as available again</button>
-      <label>My usual times: tap to add or remove for this day</label>
+      <label>My usual times: tap to add it to this day. Tap again to cross it out (booked). Tap once more to undo.</label>
       <div class="slots" id="pre"></div>
       <button class="cta alt" id="pAll" style="margin-top:10px">Add all my usual times</button>
       <label for="tIn">Or add a different time for this day</label>
@@ -164,7 +165,7 @@ textarea{min-height:84px;resize:vertical}
       <div style="display:flex;gap:10px"><input id="pIn" type="time"><button class="cta alt" id="pAdd" style="margin:0;width:auto;padding:0 26px">Add</button></div>
       <div class="slots" id="pList" style="margin-top:10px"></div></div>
       <button class="cta alt" id="pTog" style="margin-top:12px">Change my usual times</button>
-      <label>Tap a time to mark it as booked (tap again to undo). Tap ✕ to remove it.</label>
+      <label>Times on this day: tap to cross out (booked), tap again to undo. Tap ✕ only to remove a time completely.</label>
       <div class="slots" id="eSlots"></div>
     </div>
     <details><summary>Show my changes to clients</summary>
@@ -258,8 +259,8 @@ $("next").onclick=()=>{view.setMonth(view.getMonth()+1);drawCal()};
 
 
 /* ---------- Pretty pictures for Instagram (pink "Bookings Open" style) ---------- */
-const PK={deep:"#c2517f",mid:"#f06fa4",soft:"#f9b9cf",pale:"#fde8f0",ink:"#4a1535"};
-const loadFonts=()=>Promise.all([document.fonts.load("60px Pacifico"),document.fonts.load("500 30px Jost"),document.fonts.load("400 30px Jost")]);
+const PK={deep:"#a65b6b",mid:"#c98b84",soft:"#efcfc7",pale:"#fbefea",ink:"#4b2230"};
+const loadFonts=()=>Promise.all([document.fonts.load("60px 'Great Vibes'"),document.fonts.load("500 30px Jost"),document.fonts.load("400 30px Jost")]);
 const sp=(x,px)=>{try{x.letterSpacing=px+"px"}catch(e){}};
 function fuzzy(x,t,cx,cy,size){x.save();x.textAlign="center";x.font=size+"px Pacifico,cursive";x.lineJoin="round";
   x.shadowColor="rgba(194,81,127,.55)";x.shadowBlur=size*.16;x.strokeStyle=PK.mid;x.lineWidth=size*.16;x.strokeText(t,cx,cy);
@@ -267,27 +268,19 @@ function fuzzy(x,t,cx,cy,size){x.save();x.textAlign="center";x.font=size+"px Pac
   x.strokeStyle="#ffd3e4";x.lineWidth=size*.07;x.setLineDash([1,5]);x.strokeText(t,cx,cy);
   x.setLineDash([]);x.fillStyle="rgba(255,255,255,.35)";x.fillText(t,cx-size*.012,cy-size*.02);x.restore()}
 const rngOf=seed=>()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
-const FLOW=(px,py)=>Math.sin(px*.0045+py*.0016)*1.1+Math.cos(py*.0042-px*.0012)*.9+1.3;
-function furBg(x,W,H){const r=rngOf(7),g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,"#f2a2bf");g.addColorStop(.5,"#f6b6cc");g.addColorStop(1,"#ee98b6");x.fillStyle=g;x.fillRect(0,0,W,H);
-  for(let i=0;i<46;i++){const light=r()<.58,cx=r()*W,cy=r()*H;x.save();x.translate(cx,cy);x.rotate(FLOW(cx,cy));x.scale(110+r()*240,34+r()*80);
-    const q=x.createRadialGradient(0,0,0,0,0,1);q.addColorStop(0,light?"rgba(255,228,240,.55)":"rgba(206,92,138,.35)");q.addColorStop(1,"rgba(255,255,255,0)");x.fillStyle=q;x.beginPath();x.arc(0,0,1,0,6.283);x.fill();x.restore()}
-  x.lineCap="round";x.lineJoin="round";
-  for(let i=0,n=W*H/26;i<n;i++){let px=r()*W,py=r()*H;const light=r()<.6,al=.1+r()*.22;
-    x.strokeStyle=light?"rgba(255,234,243,"+al+")":"rgba(196,80,128,"+(al*.9)+")";x.lineWidth=.8+r()*1.1;x.beginPath();x.moveTo(px,py);
-    for(let k=0,st=8+r()*9;k<4;k++){const a=FLOW(px,py)+(r()-.5)*.3;px+=Math.cos(a)*st;py+=Math.sin(a)*st;x.lineTo(px,py)}x.stroke()}}
+function star(x,cx,cy,r){x.save();x.fillStyle="#fffaf6";x.strokeStyle="rgba(190,110,100,.7)";x.lineWidth=1.3;x.shadowColor="rgba(255,255,255,.95)";x.shadowBlur=r*.9;const q=r*.13;
+  x.beginPath();x.moveTo(cx,cy-r);x.quadraticCurveTo(cx+q,cy-q,cx+r,cy);x.quadraticCurveTo(cx+q,cy+q,cx,cy+r);x.quadraticCurveTo(cx-q,cy+q,cx-r,cy);x.quadraticCurveTo(cx-q,cy-q,cx,cy-r);x.fill();x.stroke();x.restore()}
+function furBg(x,W,H){const r=rngOf(5),g=x.createLinearGradient(0,0,W,H);
+  [[0,"#f6d8ce"],[.22,"#e8aa9b"],[.45,"#f9ded4"],[.7,"#d99588"],[1,"#f0c3b5"]].forEach(([o,c])=>g.addColorStop(o,c));x.fillStyle=g;x.fillRect(0,0,W,H);
+  for(let i=0;i<6;i++){x.save();x.translate(r()*W,r()*H);x.rotate(-.65);const q=x.createLinearGradient(-190,0,190,0);q.addColorStop(0,"rgba(255,255,255,0)");q.addColorStop(.5,"rgba(255,255,255,.2)");q.addColorStop(1,"rgba(255,255,255,0)");x.fillStyle=q;x.fillRect(-190,-H*1.5,380,H*3);x.restore()}
+  for(let i=0;i<1900;i++){x.fillStyle="rgba(255,255,255,"+(.12+r()*.5)+")";x.beginPath();x.arc(r()*W,r()*H,.5+r()*1.4,0,6.283);x.fill()}
+  for(let i=0;i<14;i++)star(x,r()*W,r()*H,7+r()*13)}
 function pinkBg(x,W,H){furBg(x,W,H)}
-function furText(x,t,cx,cy,size){const W=x.canvas.width,H=x.canvas.height,font=size+"px Pacifico,cursive",m=document.createElement("canvas");m.width=W;m.height=H;const mc=m.getContext("2d");
-  mc.font=font;mc.textAlign="center";mc.fillStyle="#000";mc.fillText(t,cx,cy);
-  const tw=mc.measureText(t).width,x0=Math.max(0,Math.floor(cx-tw/2-30)),y0=Math.max(0,Math.floor(cy-size)),bw=Math.min(W-x0,Math.ceil(tw+60)),bh=Math.min(H-y0,Math.ceil(size*1.7)),d=mc.getImageData(x0,y0,bw,bh).data;
-  x.save();x.font=font;x.textAlign="center";x.lineJoin="round";x.shadowColor="rgba(150,30,90,.4)";x.shadowBlur=size*.12;x.shadowOffsetY=size*.05;
-  const g=x.createLinearGradient(0,y0,0,y0+bh);g.addColorStop(0,"#f7a6c6");g.addColorStop(.55,"#ef7aa8");g.addColorStop(1,"#df5a93");
-  x.fillStyle=x.strokeStyle=g;x.lineWidth=size*.04;x.strokeText(t,cx,cy);x.fillText(t,cx,cy);x.restore();
-  const r=rngOf(11);x.save();x.lineCap="round";
-  for(let i=0,k=0,n=size*190;k<n&&i<n*6;i++){const px=r()*bw,py=r()*bh;if(d[((py|0)*bw+(px|0))*4+3]<128)continue;k++;
-    const a=1.5+(r()-.5)*2.6,l=size*(.025+r()*.04),sx=x0+px,sy=y0+py,light=r()<.55;
-    x.strokeStyle=light?"rgba(255,226,239,"+(.35+r()*.4)+")":"rgba(205,70,125,"+(.3+r()*.4)+")";x.lineWidth=.8+r()*.9;
-    x.beginPath();x.moveTo(sx,sy);x.lineTo(sx+Math.cos(a)*l,sy+Math.sin(a)*l);x.stroke()}
-  x.restore()}
+function furText(x,t,cx,cy,size){x.save();x.font=size+"px 'Great Vibes',cursive";x.textAlign="center";const tw=x.measureText(t).width;
+  x.lineJoin="round";x.strokeStyle="rgba(255,248,244,.9)";x.lineWidth=size*.04;x.shadowColor="rgba(110,45,55,.35)";x.shadowBlur=size*.07;x.shadowOffsetY=size*.035;x.strokeText(t,cx,cy);
+  const g=x.createLinearGradient(cx-tw/2,cy-size*.8,cx+tw/2,cy+size*.3);[[0,"#d99a8d"],[.25,"#a8566a"],[.5,"#e8b3a6"],[.75,"#8a3f55"],[1,"#c9847c"]].forEach(([o,c])=>g.addColorStop(o,c));
+  x.fillStyle=g;x.fillText(t,cx,cy);x.restore();
+  star(x,cx-tw/2-6,cy-size*.62,size*.1);star(x,cx+tw/2+4,cy-size*.4,size*.075);star(x,cx+tw*.28,cy+size*.22,size*.055)}
 function heart(x,cx,cy,s,col){x.save();x.fillStyle=col;x.beginPath();x.moveTo(cx,cy+s*.9);x.bezierCurveTo(cx-s*1.5,cy-s*.1,cx-s*.6,cy-s*1.1,cx,cy-s*.35);x.bezierCurveTo(cx+s*.6,cy-s*1.1,cx+s*1.5,cy-s*.1,cx,cy+s*.9);x.fill();x.restore()}
 function foot(x,W,y,dark,maxW){maxW=maxW||W-160;const u=CONFIG.site.replace(/^https?:\/\//,"").replace(/\/$/,"").toUpperCase(),h="@"+CONFIG.instagram.toUpperCase();
   x.textAlign="center";let f=28;sp(x,3);do{x.font="500 "+f+"px Jost,Arial,sans-serif";f--}while(x.measureText(u).width>maxW&&f>12);
@@ -296,26 +289,26 @@ function foot(x,W,y,dark,maxW){maxW=maxW||W-160;const u=CONFIG.site.replace(/^ht
 async function makeCard(W,H,maxDays){
   await loadFonts(); const c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d"); pinkBg(x,W,H);
   const tall=H>1500, ws=new Date(today); ws.setDate(ws.getDate()-((today.getDay()+6)%7));
-  x.textAlign="center"; x.fillStyle="#fff"; x.font="500 30px Jost,Arial,sans-serif"; sp(x,9);
+  x.textAlign="center"; x.fillStyle=PK.ink; x.font="500 30px Jost,Arial,sans-serif"; sp(x,9);
   x.fillText("AVAILABILITY THIS WEEK",W/2,tall?150:110); sp(x,0);
   x.fillStyle=PK.deep; x.font="500 34px Jost,Arial,sans-serif"; sp(x,6); x.fillText(CONFIG.studio.toUpperCase(),W/2,tall?205:158); sp(x,0);
-  furText(x,"Book Now",W/2,tall?400:300,tall?170:140);
+  furText(x,"Book Now",W/2,tall?410:305,tall?215:175);
   const py=tall?500:380, ph=H-py-(tall?290:200), px=70, pw=W-140, rh=ph/7;
-  x.fillStyle="#fff"; x.beginPath(); x.roundRect(px,py,pw,ph,44); x.fill();
+  x.fillStyle="#fffaf7"; x.beginPath(); x.roundRect(px,py,pw,ph,44); x.fill(); x.strokeStyle="#d9a99c"; x.lineWidth=2.5; x.beginPath(); x.roundRect(px+14,py+14,pw-28,ph-28,34); x.stroke();
   for(let i=0;i<7;i++){const dt=new Date(ws); dt.setDate(ws.getDate()+i); const k=key(dt);
     const y=py+i*rh, gone=dt<today||dt>last, hrs=hoursOf(dt), soon=!gone&&!offNote(dt)&&!hrs.length, off=gone||offNote(dt)||soon, bk=CONFIG.booked[k]||[], mid=y+rh/2;
-    x.textAlign="center"; x.fillStyle=off?"#c9a9b6":PK.deep; x.font="500 "+(tall?36:30)+"px Jost,Arial,sans-serif"; sp(x,3);
+    x.textAlign="center"; x.fillStyle=off?"#cdb0a8":PK.deep; x.font="500 "+(tall?36:30)+"px Jost,Arial,sans-serif"; sp(x,3);
     x.fillText(dt.toLocaleDateString("en",{weekday:"short"}).toUpperCase(),px+130,mid-4); x.font="400 "+(tall?34:28)+"px Jost,Arial,sans-serif"; sp(x,0);
     x.fillText(dt.getDate(),px+130,mid+(tall?40:34));
     x.strokeStyle=PK.soft; x.lineWidth=3; x.setLineDash([2,8]); x.beginPath(); x.moveTo(px+250,y+14); x.lineTo(px+250,y+rh-14); x.stroke(); x.setLineDash([]);
     x.textAlign="left"; const tx=px+300;
-    if(off){heart(x,tx+16,mid,16,PK.soft); x.fillStyle="#c9a9b6"; x.font="500 30px Jost,Arial,sans-serif"; sp(x,4); x.fillText(soon?"NOT OPEN YET":"DAY OFF",tx+52,mid+10); sp(x,0)}
+    if(off){heart(x,tx+16,mid,16,PK.soft); x.fillStyle="#cdb0a8"; x.font="500 30px Jost,Arial,sans-serif"; sp(x,4); x.fillText(soon?"NOT OPEN YET":"DAY OFF",tx+52,mid+10); sp(x,0)}
     else{x.fillStyle=PK.deep; x.font="500 "+(tall?32:28)+"px Jost,Arial,sans-serif"; sp(x,4); x.fillText(openSlots(dt).length?"AVAILABLE":"FULLY BOOKED",tx,mid-(tall?6:2)); sp(x,0);
       x.font="400 "+(tall?30:26)+"px Jost,Arial,sans-serif"; let cx=tx; const ty=mid+(tall?38:30);
       hrs.forEach(h=>{const t=shortT(h),w=x.measureText(t).width, b=bk.includes(h); x.fillStyle=b?"#c0224f":PK.ink; x.fillText(t,cx,ty); if(b)x.fillRect(cx-3,ty-11,w+6,4); cx+=w+26})}
   }
-  x.textAlign="center"; x.fillStyle="#fff"; x.font="500 40px Jost,Arial,sans-serif"; sp(x,10); x.fillText("DM TO BOOK",W/2,H-(tall?200:130)); sp(x,0);
-  foot(x,W,H-(tall?130:80),"#fff"); x.fillStyle="#fff"; return c;
+  x.textAlign="center"; x.fillStyle=PK.ink; x.font="500 40px Jost,Arial,sans-serif"; sp(x,10); x.fillText("DM TO BOOK",W/2,H-(tall?200:130)); sp(x,0);
+  foot(x,W,H-(tall?130:80),PK.ink); return c;
 }
 async function download(W,H,n,name){
   const c=await makeCard(W,H,n), p=$("prevCanvas"); p.width=W; p.height=H; p.getContext("2d").drawImage(c,0,0); p.hidden=false;
@@ -329,22 +322,22 @@ async function monthCard(){
   const n=new Date(view.getFullYear(),view.getMonth()+1,0).getDate(), first=new Date(view.getFullYear(),view.getMonth(),1).getDay(), rows=Math.ceil((first+n)/7);
   const W=1080,rh=158,gx=125,cw=(W-2*gx)/7,top=640,H=top+rows*rh+400,c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d"); pinkBg(x,W,H);
   const M=80; x.save(); x.shadowColor="rgba(110,20,60,.4)"; x.shadowBlur=28; x.shadowOffsetY=10;
-  [["#e9e3e6",.022],["#f46a9d",-.014]].forEach(([col,rot])=>{x.save();x.translate(W/2,H/2);x.rotate(rot);x.fillStyle=col;x.fillRect(-(W-2*M)/2,-(H-2*M)/2,W-2*M,H-2*M);x.restore()});
-  x.fillStyle="#fff"; x.fillRect(M,M,W-2*M,H-2*M); x.restore(); x.save(); x.translate(0,30);
+  [["#f3e2dc",.022],["#cf8f84",-.014]].forEach(([col,rot])=>{x.save();x.translate(W/2,H/2);x.rotate(rot);x.fillStyle=col;x.fillRect(-(W-2*M)/2,-(H-2*M)/2,W-2*M,H-2*M);x.restore()});
+  x.fillStyle="#fffaf7"; x.fillRect(M,M,W-2*M,H-2*M); x.restore(); x.strokeStyle="#d9a99c"; x.lineWidth=2.5; x.strokeRect(M+16,M+16,W-2*M-32,H-2*M-32); x.lineWidth=1; x.strokeRect(M+25,M+25,W-2*M-50,H-2*M-50); x.save(); x.translate(0,30);
   x.textAlign="center"; x.fillStyle=PK.ink; x.font="500 26px Jost,Arial,sans-serif"; sp(x,12); x.fillText(CONFIG.studio.toUpperCase(),W/2,125); sp(x,0);
   x.fillStyle=PK.soft; x.fillRect(gx,152,W-2*gx,2);
   const mo=view.toLocaleDateString("en",{month:"long"}).toUpperCase(); x.font="500 56px Jost,Arial,sans-serif"; sp(x,6);
   const yr=" "+view.getFullYear(), w1=x.measureText(mo).width, w2=x.measureText(yr).width; x.textAlign="left"; x.fillStyle=PK.ink; x.fillText(mo,W/2-(w1+w2)/2,235); x.fillStyle=PK.mid; x.fillText(yr,W/2-(w1+w2)/2+w1,235); sp(x,0);
-  furText(x,"Bookings",W/2,420,185);
+  furText(x,"Bookings",W/2,440,235);
   x.textAlign="center"; x.fillStyle=PK.ink; x.font="500 44px Jost,Arial,sans-serif"; sp(x,22); x.fillText("OPEN",W/2+11,505); sp(x,0);
   x.font="500 25px Jost,Arial,sans-serif"; x.fillStyle=PK.ink; sp(x,2); ["SUN","MON","TUE","WED","THU","FRI","SAT"].forEach((d,i)=>x.fillText(d,gx+i*cw+cw/2,top-24)); sp(x,0);
-  for(let r=0;r<rows;r++){ if(r%2===0){x.fillStyle="#fdebf2";x.beginPath();x.roundRect(gx-12,top+r*rh+4,W-2*gx+24,rh-8,24);x.fill()} }
-  x.strokeStyle="#e3d3da"; x.lineWidth=2; for(let i=1;i<7;i++){x.beginPath();x.moveTo(gx+i*cw,top+6);x.lineTo(gx+i*cw,top+rows*rh-6);x.stroke()}
+  for(let r=0;r<rows;r++){ if(r%2===0){x.fillStyle="#fbefea";x.beginPath();x.roundRect(gx-12,top+r*rh+4,W-2*gx+24,rh-8,24);x.fill()} }
+  x.strokeStyle="#ecd9d3"; x.lineWidth=2; for(let i=1;i<7;i++){x.beginPath();x.moveTo(gx+i*cw,top+6);x.lineTo(gx+i*cw,top+rows*rh-6);x.stroke()}
   for(let d=1;d<=n;d++){
     const dt=new Date(view.getFullYear(),view.getMonth(),d), i=first+d-1, x0=gx+(i%7)*cw, y0=top+Math.floor(i/7)*rh;
     const hrs=hoursOf(dt), gone=dt<today||dt>last, off=gone||offNote(dt)||(hrs.length&&!openSlots(dt).length), bk=CONFIG.booked[key(dt)]||[];
-    x.textAlign="right"; x.fillStyle=off?"#c9a9b6":PK.ink; x.font="500 28px Jost,Arial,sans-serif"; x.fillText(d,x0+cw-12,y0+42);
-    if(off){x.strokeStyle="#c9a9b6";x.lineWidth=2;x.beginPath();x.moveTo(x0+30,y0+60);x.lineTo(x0+cw-30,y0+rh-26);x.moveTo(x0+cw-30,y0+60);x.lineTo(x0+30,y0+rh-26);x.stroke();continue}
+    x.textAlign="right"; x.fillStyle=off?"#cdb0a8":PK.ink; x.font="500 28px Jost,Arial,sans-serif"; x.fillText(d,x0+cw-12,y0+42);
+    if(off){x.strokeStyle="#cdb0a8";x.lineWidth=2;x.beginPath();x.moveTo(x0+30,y0+60);x.lineTo(x0+cw-30,y0+rh-26);x.moveTo(x0+cw-30,y0+60);x.lineTo(x0+30,y0+rh-26);x.stroke();continue}
     x.textAlign="left"; x.font="400 21px Jost,Arial,sans-serif";
     hrs.forEach((h,k)=>{const t=shortT(h),ty=y0+68+k*24,b=bk.includes(h); x.fillStyle=b?"#c0224f":PK.ink; x.fillText(t,x0+14,ty); if(b)x.fillRect(x0+11,ty-8,x.measureText(t).width+6,3)});
   }
@@ -374,8 +367,8 @@ function openEdit(quiet){
   $("eDay").hidden=false; $("eDate").textContent=nice(); $("eNote").value=isOff?CONFIG.offDays[k]:"";
   $("eOff").textContent=isOff?"Update note":"Mark as not available"; $("eOn").hidden=!isOff;
   const sortP=()=>CONFIG.presets.sort((a,b)=>tmin(a)-tmin(b)), have=CONFIG.times[k]||[];
-  const pre=$("pre"); pre.innerHTML=""; sortP().forEach(h=>{const b=document.createElement("button"); b.className="slot"; b.textContent=h; b.setAttribute("aria-pressed",have.includes(h));
-    b.onclick=()=>{const a=CONFIG.times[k]=CONFIG.times[k]||[],i=a.indexOf(h); if(i<0)a.push(h); else{a.splice(i,1);CONFIG.booked[k]=(CONFIG.booked[k]||[]).filter(t=>t!==h);if(!a.length)delete CONFIG.times[k]} saveEdit()}; pre.append(b)});
+  const pre=$("pre"); pre.innerHTML=""; sortP().forEach(h=>{const b=document.createElement("button"); const isB=(CONFIG.booked[k]||[]).includes(h); b.className=isB?"slot x":"slot"; b.textContent=h; b.setAttribute("aria-pressed",isB||have.includes(h));
+    b.onclick=()=>{const a=CONFIG.times[k]=CONFIG.times[k]||[],i=a.indexOf(h); if(i<0)a.push(h); else{const bb=CONFIG.booked[k]=CONFIG.booked[k]||[],j=bb.indexOf(h); if(j<0)bb.push(h); else bb.splice(j,1)} saveEdit()}; pre.append(b)});
   const pl=$("pList"); pl.innerHTML=""; CONFIG.presets.forEach(h=>{const b=document.createElement("button"); b.className="slot"; b.textContent=h+"  ✕"; b.setAttribute("aria-label","Remove "+h+" from my usual times");
     b.onclick=()=>{CONFIG.presets=CONFIG.presets.filter(t=>t!==h); saveEdit()}; pl.append(b)});
   const w=$("eSlots"); w.innerHTML=""; const bk=CONFIG.booked[k]||[];
