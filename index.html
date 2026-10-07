@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#fbe6ea">
 <title>Book Nails by Jen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,500;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,500;1,500&family=Pacifico&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{--blush:#fbe6ea;--rose:#f3b9c6;--berry:#6b1f45;--plum:#3a0f2a;--gold:#c9a063;--gold-deep:#8f6a2e;--pearl:#fffaf7;--ink:#3a0f2a;--mauve:#8a6a78;--line:#ecc8d1;
 --display:'Bodoni Moda',Georgia,serif;--body:'Jost','Helvetica Neue',Arial,sans-serif;color-scheme:light}
@@ -15,8 +15,8 @@ body{font-family:var(--body);color:var(--ink);line-height:1.55;min-height:100vh;
 background:radial-gradient(60rem 38rem at 6% -6%,#fff 0,transparent 62%),radial-gradient(48rem 34rem at 104% 22%,rgba(243,185,198,.95) 0,transparent 62%),radial-gradient(40rem 28rem at -4% 100%,rgba(243,185,198,.6) 0,transparent 62%),var(--blush)}
 .wrap{max-width:640px;margin:0 auto;padding:56px 18px 80px}
 header{text-align:center;margin-bottom:38px;animation:rise .9s cubic-bezier(.2,.7,.2,1) both}
-h1{font-family:var(--display);font-weight:500;font-size:clamp(3rem,12vw,5.2rem);line-height:.95;letter-spacing:-.02em;color:var(--berry)}
-h1 em{display:block;font-size:.34em;letter-spacing:.01em;color:var(--gold-deep);margin-top:.55em;font-weight:500}
+h1{font-family:Pacifico,cursive;font-weight:500;font-size:clamp(3rem,12vw,5.2rem);line-height:.95;letter-spacing:-.02em;color:var(--berry)}
+h1 em{font-family:var(--body);text-transform:uppercase;letter-spacing:.32em;font-style:normal;display:block;font-size:.34em;letter-spacing:.01em;color:var(--gold-deep);margin-top:.55em;font-weight:500}
 .orn{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:20px}
 .orn i{display:block;width:64px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
 .orn i:last-child{transform:scaleX(-1)}
@@ -155,7 +155,16 @@ textarea{min-height:84px;resize:vertical}
       <input id="eNote" placeholder="Out of town, day off, family event…">
       <button class="cta" id="eOff">Mark as not available</button>
       <button class="cta alt" id="eOn" hidden>Mark as available again</button>
-      <label>Or tap a time to mark it as booked (tap again to undo)</label>
+      <label>My usual times: tap to add or remove for this day</label>
+      <div class="slots" id="pre"></div>
+      <button class="cta alt" id="pAll" style="margin-top:10px">Add all my usual times</button>
+      <label for="tIn">Or add a different time for this day</label>
+      <div style="display:flex;gap:10px"><input id="tIn" type="time"><button class="cta alt" id="tAdd" style="margin:0;width:auto;padding:0 26px">Add</button></div>
+      <div id="pBox" hidden><label for="pIn">Change my usual times</label>
+      <div style="display:flex;gap:10px"><input id="pIn" type="time"><button class="cta alt" id="pAdd" style="margin:0;width:auto;padding:0 26px">Add</button></div>
+      <div class="slots" id="pList" style="margin-top:10px"></div></div>
+      <button class="cta alt" id="pTog" style="margin-top:12px">Change my usual times</button>
+      <label>Tap a time to mark it as booked (tap again to undo). Tap ✕ to remove it.</label>
       <div class="slots" id="eSlots"></div>
     </div>
     <details><summary>Show my changes to clients</summary>
@@ -186,10 +195,11 @@ const CONFIG = {
   site: "https://tolentinojennelyn01-cloud.github.io/nailsbyjen-site/",   // printed on the saved calendar picture
   whatsapp: "639XXXXXXXXX",              // your number: country code + number, no + or spaces
   closedDays: [],                        // weekly days off: 0 = Sunday ... 6 = Saturday (Sundays are open now)
-  hours: ["8:00 AM","11:00 AM","2:00 PM","5:00 PM"],   // 3 hours apart; edit these to change your times
   daysAhead: 90,
   // Your off days and taken times now live in availability.json (set them from the ?owner view)
   offDays: {},
+  presets: ["8:00 AM","11:00 AM","2:00 PM","5:00 PM"],   // your usual times (you can change them from the ?owner view)
+  times: {},     // your available times per date, set from the ?owner view
   booked: {}
 };
 /* Online schedule (so every device sees the same one). Paste your Firebase web app config here. */
@@ -212,13 +222,16 @@ const OWNER=new URLSearchParams(location.search).has("owner");
 if(OWNER){$("owner").hidden=false;$("edit").hidden=false}
 
 const offNote=dt=>CONFIG.offDays[key(dt)]||(CONFIG.closedDays.includes(dt.getDay())?"Jen isn't taking bookings on this day.":null);
-const openSlots=dt=>CONFIG.hours.filter(h=>!(CONFIG.booked[key(dt)]||[]).includes(h));
+const tmin=t=>{const m=/(\d+):(\d+) (AM|PM)/.exec(t)||[0,0,0,"AM"];return (m[1]%12+(m[3]==="PM"?12:0))*60+ +m[2]};
+const hoursOf=dt=>(CONFIG.times[key(dt)]||[]).slice().sort((a,b)=>tmin(a)-tmin(b));
+const openSlots=dt=>hoursOf(dt).filter(h=>!(CONFIG.booked[key(dt)]||[]).includes(h));
+const to12=v=>{const[h,m]=v.split(":").map(Number);return ((h%12)||12)+":"+pad(m)+" "+(h<12?"AM":"PM")};
 const nice=()=>date.toLocaleDateString("en",{weekday:"long",month:"long",day:"numeric"});
 
 
 const shortT=h=>h.replace(":00 ","");
 function cellHtml(dt,d,hide){const bk=CONFIG.booked[key(dt)]||[];
-  return `<span class="dn">${d}</span>`+(hide?"":`<span class="tms">${CONFIG.hours.map(h=>`<i${bk.includes(h)?' class="x"':''}>${shortT(h)}</i>`).join("")}</span>`)}
+  return `<span class="dn">${d}</span>`+(hide?(hide==="off"?`<span class="tms" style="color:#e58aa6;font-size:1.1rem">♥</span><span class="tms">OFF</span>`:""):`<span class="tms">${hoursOf(dt).map(h=>`<i${bk.includes(h)?' class="x"':''}>${shortT(h)}</i>`).join("")}</span>`)}
 function drawCal(){
   const g=$("cal"); g.innerHTML="";
   ["S","M","T","W","T","F","S"].forEach(d=>{const e=document.createElement("div");e.className="dow";e.textContent=d;g.append(e)});
@@ -230,8 +243,8 @@ function drawCal(){
   for(let d=1;d<=n;d++){
     const dt=new Date(view.getFullYear(),view.getMonth(),d), b=document.createElement("button");
     b.className="day"; b.setAttribute("aria-label",dt.toDateString());
-    const off=offNote(dt)||(openSlots(dt).length?null:"Fully booked this day. Try another date 💕");
-    b.disabled=dt<today||dt>last; b.innerHTML=cellHtml(dt,d,off||b.disabled);
+    const off=offNote(dt)||(hoursOf(dt).length&&!openSlots(dt).length?"Fully booked this day. Try another date 💕":null);
+    b.disabled=dt<today||dt>last; b.innerHTML=cellHtml(dt,d,b.disabled?true:off?"off":false);
     if(off) b.classList.add("off"); else if((CONFIG.booked[key(dt)]||[]).length) b.classList.add("bk");
     if(+dt===+today) b.classList.add("today");
     if(date&&+dt===+date) b.classList.add("sel");
@@ -244,86 +257,76 @@ $("prev").onclick=()=>{view.setMonth(view.getMonth()-1);drawCal()};
 $("next").onclick=()=>{view.setMonth(view.getMonth()+1);drawCal()};
 
 
-/* ---------- Availability image for Instagram ---------- */
-async function makeCard(W,H,maxDays,mode){
-  await Promise.all([document.fonts.load("500 60px 'Bodoni Moda'"),document.fonts.load("italic 500 40px 'Bodoni Moda'"),document.fonts.load("400 30px Jost")]);
-  const c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d");
-  const bg=x.createLinearGradient(0,0,W,H); bg.addColorStop(0,"#fff4f6"); bg.addColorStop(.5,"#fbe6ea"); bg.addColorStop(1,"#f3b9c6");
-  x.fillStyle=bg; x.fillRect(0,0,W,H);
-  x.strokeStyle="#c9a063"; x.lineWidth=4; x.strokeRect(36,36,W-72,H-72);
-  x.textAlign="center"; x.fillStyle="#6b1f45";
-  x.font="500 92px 'Bodoni Moda',Georgia,serif"; x.fillText(CONFIG.studio,W/2,H>1500?210:170);
-  x.fillStyle="#c9a063"; x.font="italic 500 48px 'Bodoni Moda',Georgia,serif";
-  x.fillText(mode==="booked"?"already booked":"available this week",W/2,H>1500?285:240);
-  const days=[], ws=new Date(today); ws.setDate(ws.getDate()-(today.getDay()+6)%7+(today.getDay()===0?7:0)); const we=new Date(ws); we.setDate(we.getDate()+6);
-  for(let d=new Date(ws);d<=we&&d<=last&&days.length<maxDays;d.setDate(d.getDate()+1)){
-    if(d<today)continue; const dt=new Date(d); if(mode==="booked"){if((CONFIG.booked[key(dt)]||[]).length)days.push([dt,CONFIG.hours]);continue}
-    if(offNote(dt))continue; const bkd=CONFIG.booked[key(dt)]||[];
-    days.push([dt,[...CONFIG.hours.filter(h=>!bkd.includes(h)),...CONFIG.hours.filter(h=>bkd.includes(h))]])}
-  let y=H>1500?400:330; const m=90, bottom=H-170, step=(bottom-y)/Math.max(days.length,1);
-  x.textAlign="left";
-  days.forEach(([dt,s])=>{
-    x.fillStyle="#3a0f2a"; x.font="500 40px 'Bodoni Moda',Georgia,serif";
-    x.fillText(dt.toLocaleDateString("en",{weekday:"long",month:"short",day:"numeric"}),m,y);
-    let cx=m, cy=y+22; x.font="400 27px Jost,Arial,sans-serif";
-    s.forEach(h=>{const w=x.measureText(h).width+36;
-      if(cx+w>W-m){cx=m;cy+=58}
-      const bk=(CONFIG.booked[key(dt)]||[]).includes(h);
-      x.fillStyle=bk?"#e3cfd6":"#6b1f45"; x.beginPath(); x.roundRect(cx,cy,w,46,23); x.fill();
-      x.fillStyle=bk?"#8a6a78":"#fffaf7"; x.fillText(h,cx+18,cy+32);
-      if(bk){x.fillRect(cx+16,cy+22,w-32,3)} cx+=w+12});
-    y+=Math.min(step,230);
-  });
-  if(!days.length){x.textAlign="center";x.fillStyle="#6b1f45";x.font="500 50px 'Bodoni Moda',serif";x.fillText(mode==="booked"?"No bookings yet":"Fully booked for now 💕",W/2,H/2)}
-  x.textAlign="center"; x.fillStyle="#6b1f45"; x.font="500 38px Jost,Arial,sans-serif";
-  x.fillText("Book via link in bio",W/2,H-110); x.fillStyle="#c9a063"; x.fillText("@"+CONFIG.instagram,W/2,H-62);
-  return c;
+/* ---------- Pretty pictures for Instagram (pink "Bookings Open" style) ---------- */
+const PK={deep:"#c2517f",mid:"#f06fa4",soft:"#f9b9cf",pale:"#fde8f0",ink:"#4a1535"};
+const loadFonts=()=>Promise.all([document.fonts.load("60px Pacifico"),document.fonts.load("500 30px Jost"),document.fonts.load("400 30px Jost")]);
+const sp=(x,px)=>{try{x.letterSpacing=px+"px"}catch(e){}};
+function fuzzy(x,t,cx,cy,size){x.save();x.textAlign="center";x.font=size+"px Pacifico,cursive";x.lineJoin="round";
+  x.shadowColor="rgba(194,81,127,.55)";x.shadowBlur=size*.16;x.strokeStyle=PK.mid;x.lineWidth=size*.16;x.strokeText(t,cx,cy);
+  x.shadowBlur=0;x.fillStyle="#f58ab3";x.fillText(t,cx,cy);
+  x.strokeStyle="#ffd3e4";x.lineWidth=size*.07;x.setLineDash([1,5]);x.strokeText(t,cx,cy);
+  x.setLineDash([]);x.fillStyle="rgba(255,255,255,.35)";x.fillText(t,cx-size*.012,cy-size*.02);x.restore()}
+function pinkBg(x,W,H){const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,"#fbc9da");g.addColorStop(1,"#f08fb4");x.fillStyle=g;x.fillRect(0,0,W,H)}
+function heart(x,cx,cy,s,col){x.save();x.fillStyle=col;x.beginPath();x.moveTo(cx,cy+s*.9);x.bezierCurveTo(cx-s*1.5,cy-s*.1,cx-s*.6,cy-s*1.1,cx,cy-s*.35);x.bezierCurveTo(cx+s*.6,cy-s*1.1,cx+s*1.5,cy-s*.1,cx,cy+s*.9);x.fill();x.restore()}
+function foot(x,W,y,dark){x.textAlign="center";x.fillStyle=dark;x.font="500 28px Jost,Arial,sans-serif";sp(x,3);
+  x.fillText(CONFIG.site.replace(/^https?:\/\//,"").replace(/\/$/,"").toUpperCase(),W/2,y);x.fillStyle=PK.deep;x.fillText("@"+CONFIG.instagram.toUpperCase(),W/2,y+46);sp(x,0)}
+
+async function makeCard(W,H,maxDays){
+  await loadFonts(); const c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d"); pinkBg(x,W,H);
+  const tall=H>1500, ws=new Date(today); ws.setDate(ws.getDate()-((today.getDay()+6)%7));
+  x.textAlign="center"; x.fillStyle="#fff"; x.font="500 30px Jost,Arial,sans-serif"; sp(x,9);
+  x.fillText("AVAILABILITY THIS WEEK",W/2,tall?150:110); sp(x,0);
+  x.fillStyle=PK.deep; x.font="500 34px Jost,Arial,sans-serif"; sp(x,6); x.fillText(CONFIG.studio.toUpperCase(),W/2,tall?205:158); sp(x,0);
+  fuzzy(x,"Book Now",W/2,tall?400:300,tall?170:140);
+  const py=tall?500:380, ph=H-py-(tall?290:200), px=70, pw=W-140, rh=ph/7;
+  x.fillStyle="#fff"; x.beginPath(); x.roundRect(px,py,pw,ph,44); x.fill();
+  for(let i=0;i<7;i++){const dt=new Date(ws); dt.setDate(ws.getDate()+i); const k=key(dt);
+    const y=py+i*rh, gone=dt<today||dt>last, hrs=hoursOf(dt), soon=!gone&&!offNote(dt)&&!hrs.length, off=gone||offNote(dt)||soon, bk=CONFIG.booked[k]||[], mid=y+rh/2;
+    x.textAlign="center"; x.fillStyle=off?"#c9a9b6":PK.deep; x.font="500 "+(tall?36:30)+"px Jost,Arial,sans-serif"; sp(x,3);
+    x.fillText(dt.toLocaleDateString("en",{weekday:"short"}).toUpperCase(),px+130,mid-4); x.font="400 "+(tall?34:28)+"px Jost,Arial,sans-serif"; sp(x,0);
+    x.fillText(dt.getDate(),px+130,mid+(tall?40:34));
+    x.strokeStyle=PK.soft; x.lineWidth=3; x.setLineDash([2,8]); x.beginPath(); x.moveTo(px+250,y+14); x.lineTo(px+250,y+rh-14); x.stroke(); x.setLineDash([]);
+    x.textAlign="left"; const tx=px+300;
+    if(off){heart(x,tx+16,mid,16,PK.soft); x.fillStyle="#c9a9b6"; x.font="500 30px Jost,Arial,sans-serif"; sp(x,4); x.fillText(soon?"NOT OPEN YET":"DAY OFF",tx+52,mid+10); sp(x,0)}
+    else{x.fillStyle=PK.deep; x.font="500 "+(tall?32:28)+"px Jost,Arial,sans-serif"; sp(x,4); x.fillText(openSlots(dt).length?"AVAILABLE":"FULLY BOOKED",tx,mid-(tall?6:2)); sp(x,0);
+      x.font="400 "+(tall?30:26)+"px Jost,Arial,sans-serif"; let cx=tx; const ty=mid+(tall?38:30);
+      hrs.forEach(h=>{const t=shortT(h),w=x.measureText(t).width, b=bk.includes(h); x.fillStyle=b?"#c9a9b6":PK.ink; x.fillText(t,cx,ty); if(b)x.fillRect(cx-2,ty-10,w+4,3); cx+=w+26})}
+  }
+  x.textAlign="center"; x.fillStyle="#fff"; x.font="500 40px Jost,Arial,sans-serif"; sp(x,10); x.fillText("DM TO BOOK",W/2,H-(tall?200:130)); sp(x,0);
+  foot(x,W,H-(tall?130:80),"#fff"); x.fillStyle="#fff"; return c;
 }
-async function download(W,H,n,name,mode){
-  const c=await makeCard(W,H,n,mode), p=$("prevCanvas"); p.width=W; p.height=H; p.getContext("2d").drawImage(c,0,0); p.hidden=false;
+async function download(W,H,n,name){
+  const c=await makeCard(W,H,n), p=$("prevCanvas"); p.width=W; p.height=H; p.getContext("2d").drawImage(c,0,0); p.hidden=false;
   const a=document.createElement("a"); a.href=c.toDataURL("image/png"); a.download=name; a.click();
 }
 $("dlStory").onclick=()=>download(1080,1920,7,"availability-story.png");
 $("dlPost").onclick=()=>download(1080,1350,7,"availability-post.png");
-/* ---------- Save the calendar as a picture ---------- */
+/* ---------- Save the calendar as a picture ("Bookings Open" post) ---------- */
 async function monthCard(){
-  await Promise.all([document.fonts.load("500 60px 'Bodoni Moda'"),document.fonts.load("italic 500 40px 'Bodoni Moda'"),document.fonts.load("500 30px Jost"),document.fonts.load("300 30px Jost")]);
+  await loadFonts();
   const n=new Date(view.getFullYear(),view.getMonth()+1,0).getDate(), first=new Date(view.getFullYear(),view.getMonth(),1).getDay(), rows=Math.ceil((first+n)/7);
-  const W=1600,rh=170,top=340,body=Math.max(rows*rh,640),H=top+body+240,c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d");
-  const bg=x.createLinearGradient(0,0,W,H); bg.addColorStop(0,"#fff4f6"); bg.addColorStop(.5,"#fbe6ea"); bg.addColorStop(1,"#f3b9c6");
-  x.fillStyle=bg; x.fillRect(0,0,W,H); x.strokeStyle="#c9a063"; x.lineWidth=4; x.strokeRect(36,36,W-72,H-72);
-  const m=80,cw=1040/7,nx=1180,nw=340;
-  x.textAlign="left"; x.fillStyle="#6b1f45"; x.font="500 96px 'Bodoni Moda',Georgia,serif"; x.fillText(CONFIG.studio,m,175);
-  x.fillStyle="#8f6a2e"; x.font="italic 500 52px 'Bodoni Moda',Georgia,serif"; x.fillText(view.toLocaleDateString("en",{month:"long",year:"numeric"}),m,250);
-  x.textAlign="center"; x.fillStyle="#6b1f45"; x.font="500 26px Jost,Arial,sans-serif";
-  ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach((d,i)=>x.fillText(d,m+i*cw+cw/2,top-22));
+  const W=1080,rh=158,gx=90,cw=(W-2*gx)/7,top=640,H=top+rows*rh+300,c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d"); pinkBg(x,W,H);
+  x.fillStyle="#fff"; x.shadowColor="rgba(120,20,70,.35)"; x.shadowBlur=40; x.shadowOffsetY=14; x.fillRect(50,50,W-100,H-100); x.shadowColor="transparent";
+  x.textAlign="center"; x.fillStyle=PK.ink; x.font="500 26px Jost,Arial,sans-serif"; sp(x,12); x.fillText(CONFIG.studio.toUpperCase(),W/2,125); sp(x,0);
+  x.fillStyle=PK.soft; x.fillRect(gx,152,W-2*gx,2);
+  const mo=view.toLocaleDateString("en",{month:"long"}).toUpperCase(); x.font="500 56px Jost,Arial,sans-serif"; sp(x,6);
+  const yr=" "+view.getFullYear(), w1=x.measureText(mo).width, w2=x.measureText(yr).width; x.textAlign="left"; x.fillStyle=PK.ink; x.fillText(mo,W/2-(w1+w2)/2,235); x.fillStyle=PK.mid; x.fillText(yr,W/2-(w1+w2)/2+w1,235); sp(x,0);
+  fuzzy(x,"Bookings",W/2,420,185);
+  x.textAlign="center"; x.fillStyle=PK.ink; x.font="500 44px Jost,Arial,sans-serif"; sp(x,22); x.fillText("OPEN",W/2+11,505); sp(x,0);
+  x.font="500 25px Jost,Arial,sans-serif"; x.fillStyle=PK.ink; sp(x,2); ["SUN","MON","TUE","WED","THU","FRI","SAT"].forEach((d,i)=>x.fillText(d,gx+i*cw+cw/2,top-24)); sp(x,0);
+  for(let r=0;r<rows;r++){ if(r%2===0){x.fillStyle="#fdebf2";x.beginPath();x.roundRect(gx-12,top+r*rh+4,W-2*gx+24,rh-8,24);x.fill()} }
+  x.strokeStyle="#e3d3da"; x.lineWidth=2; for(let i=1;i<7;i++){x.beginPath();x.moveTo(gx+i*cw,top+6);x.lineTo(gx+i*cw,top+rows*rh-6);x.stroke()}
   for(let d=1;d<=n;d++){
-    const dt=new Date(view.getFullYear(),view.getMonth(),d), i=first+d-1, cx=m+(i%7)*cw+cw/2, y0=top+Math.floor(i/7)*rh;
-    const gone=dt<today||dt>last, off=!gone&&(offNote(dt)||!openSlots(dt).length), bk=CONFIG.booked[key(dt)]||[], nh=rh-14;
-    x.beginPath(); x.roundRect(cx-54,y0+4,108,nh,[54,54,20,20]);
-    if(gone){x.strokeStyle="#e5d3da";x.lineWidth=2;x.stroke()}
-    else if(off){x.fillStyle="#e9dde2";x.fill()}
-    else{const g=x.createLinearGradient(0,y0,0,y0+nh);g.addColorStop(0,"#fff");g.addColorStop(1,"#f3b9c6");x.fillStyle=g;x.fill();x.strokeStyle=bk.length?"#c9a063":"#fff";x.lineWidth=bk.length?5:3;x.stroke()}
-    x.fillStyle=gone?"#c8b3bb":off?"#8a6a78":"#3a0f2a"; x.font="500 30px Jost,Arial,sans-serif"; x.fillText(d,cx,y0+44);
-    if(!gone&&!off){const st=Math.min(28,(nh-64)/CONFIG.hours.length); x.font="500 "+Math.min(22,st-2)+"px Jost,Arial,sans-serif";
-      CONFIG.hours.forEach((h,k)=>{const t=shortT(h),ty=y0+76+k*st;
-        if(bk.includes(h)){x.fillStyle="#b3123b";x.fillText(t,cx,ty);const w=x.measureText(t).width;x.fillRect(cx-w/2-3,ty-8,w+6,3)}
-        else{x.fillStyle="#3a0f2a";x.fillText(t,cx,ty)}})}
+    const dt=new Date(view.getFullYear(),view.getMonth(),d), i=first+d-1, x0=gx+(i%7)*cw, y0=top+Math.floor(i/7)*rh;
+    const hrs=hoursOf(dt), gone=dt<today||dt>last, off=gone||offNote(dt)||(hrs.length&&!openSlots(dt).length), bk=CONFIG.booked[key(dt)]||[];
+    x.textAlign="right"; x.fillStyle=off?"#c9a9b6":PK.ink; x.font="500 28px Jost,Arial,sans-serif"; x.fillText(d,x0+cw-12,y0+42);
+    if(off){x.strokeStyle="#c9a9b6";x.lineWidth=2;x.beginPath();x.moveTo(x0+30,y0+60);x.lineTo(x0+cw-30,y0+rh-26);x.moveTo(x0+cw-30,y0+60);x.lineTo(x0+30,y0+rh-26);x.stroke();continue}
+    x.textAlign="left"; x.font="400 21px Jost,Arial,sans-serif";
+    hrs.forEach((h,k)=>{const t=shortT(h),ty=y0+68+k*24,b=bk.includes(h); x.fillStyle=b?"#c9a9b6":PK.ink; x.fillText(t,x0+14,ty); if(b)x.fillRect(x0+12,ty-7,x.measureText(t).width+4,2)});
   }
-  const ly=top+rows*rh+60, sw=(sx,kind)=>{x.beginPath();x.roundRect(sx,ly-22,26,34,[13,13,6,6]);
-    if(kind==="off"){x.fillStyle="#e9dde2";x.fill()}else{x.fillStyle="#f9d6de";x.fill();x.strokeStyle=kind==="bk"?"#c9a063":"#fff";x.lineWidth=kind==="bk"?4:2;x.stroke()}};
-  sw(m,"open"); sw(m+260,"bk"); sw(m+560,"off");
-  x.textAlign="left"; x.fillStyle="#3a0f2a"; x.font="400 28px Jost,Arial,sans-serif";
-  x.fillText("Available",m+40,ly+5); x.fillText("Has booking",m+300,ly+5); x.fillText("Not available",m+600,ly+5);
-  x.beginPath(); x.roundRect(nx,top-60,nw,body+60,28); x.fillStyle="rgba(255,255,255,.55)"; x.fill();
-  x.setLineDash([12,9]); x.strokeStyle="#f3b9c6"; x.lineWidth=3; x.stroke(); x.setLineDash([]);
-  x.textAlign="center"; x.fillStyle="#6b1f45"; x.font="500 44px 'Bodoni Moda',Georgia,serif"; x.fillText("Notes",nx+nw/2,top+8);
-  x.fillStyle="#3a0f2a"; x.font="300 23px Jost,Arial,sans-serif"; let ny=top+66;
-  ["Appointment times are 3 hours apart.",
-   "To book, message Jen on Instagram with your preferred date and time. Your slot is confirmed once Jen replies.","Thank you!"]
-  .forEach(t=>{wrapText(x,t,nw-56).forEach(l=>{x.fillText(l,nx+nw/2,ny);ny+=32});ny+=20});
-  x.fillStyle="#3a0f2a"; x.font="400 30px Jost,Arial,sans-serif"; x.fillText("Book here: "+CONFIG.site.replace(/^https?:\/\//,"").replace(/\/$/,""),W/2,H-112);
-  x.fillStyle="#8f6a2e"; x.font="500 34px Jost,Arial,sans-serif"; x.fillText("@"+CONFIG.instagram,W/2,H-62);
+  const ny=top+rows*rh+60; x.textAlign="center"; x.fillStyle=PK.deep; x.font="500 24px Jost,Arial,sans-serif"; sp(x,1);
+  x.fillText("APPOINTMENTS ARE 3 HOURS APART  ·  MESSAGE JEN ON INSTAGRAM TO BOOK",W/2,ny); sp(x,0);
+  x.fillStyle=PK.soft; x.fillRect(gx,ny+30,W-2*gx,2); foot(x,W,ny+85,PK.ink);
   return c;
 }
 $("saveCal").onclick=async()=>{const c=await monthCard(),a=document.createElement("a");
@@ -336,8 +339,8 @@ function wrapText(x,t,w){const out=[];let line="";String(t).split(" ").forEach(w
 /* ---------- Owner tools ---------- */
 function saveEdit(){
   Object.keys(CONFIG.booked).forEach(k=>{if(!CONFIG.booked[k].length)delete CONFIG.booked[k]});
-  $("json").value=JSON.stringify({offDays:CONFIG.offDays,booked:CONFIG.booked},null,2);
-  if(SYNC)DB.collection("schedule").doc("main").set({offDays:CONFIG.offDays,booked:CONFIG.booked}).catch(()=>alert("Could not save. Please sign in again."));
+  $("json").value=JSON.stringify({offDays:CONFIG.offDays,presets:CONFIG.presets,times:CONFIG.times,booked:CONFIG.booked},null,2);
+  if(SYNC)DB.collection("schedule").doc("main").set({offDays:CONFIG.offDays,presets:CONFIG.presets,times:CONFIG.times,booked:CONFIG.booked}).catch(()=>alert("Could not save. Please sign in again."));
   else try{localStorage.setItem("nbj-schedule",$("json").value)}catch(e){}
   drawCal(); openEdit(true);
 }
@@ -346,31 +349,42 @@ function openEdit(quiet){
   const k=key(date), isOff=CONFIG.offDays[k]!==undefined;
   $("eDay").hidden=false; $("eDate").textContent=nice(); $("eNote").value=isOff?CONFIG.offDays[k]:"";
   $("eOff").textContent=isOff?"Update note":"Mark as not available"; $("eOn").hidden=!isOff;
-  const w=$("eSlots"); w.innerHTML="";
-  [...CONFIG.hours.filter(h=>!(CONFIG.booked[k]||[]).includes(h)),...CONFIG.hours.filter(h=>(CONFIG.booked[k]||[]).includes(h))].forEach(h=>{const b=document.createElement("button"); b.className="slot x"; b.textContent=h;
-    b.setAttribute("aria-pressed",(CONFIG.booked[k]||[]).includes(h));
-    b.onclick=()=>{const a=CONFIG.booked[k]=CONFIG.booked[k]||[],i=a.indexOf(h);
-      if(i<0)a.push(h);else a.splice(i,1);saveEdit()};
-    w.append(b)});
+  const sortP=()=>CONFIG.presets.sort((a,b)=>tmin(a)-tmin(b)), have=CONFIG.times[k]||[];
+  const pre=$("pre"); pre.innerHTML=""; sortP().forEach(h=>{const b=document.createElement("button"); b.className="slot"; b.textContent=h; b.setAttribute("aria-pressed",have.includes(h));
+    b.onclick=()=>{const a=CONFIG.times[k]=CONFIG.times[k]||[],i=a.indexOf(h); if(i<0)a.push(h); else{a.splice(i,1);CONFIG.booked[k]=(CONFIG.booked[k]||[]).filter(t=>t!==h);if(!a.length)delete CONFIG.times[k]} saveEdit()}; pre.append(b)});
+  const pl=$("pList"); pl.innerHTML=""; CONFIG.presets.forEach(h=>{const b=document.createElement("button"); b.className="slot"; b.textContent=h+"  ✕"; b.setAttribute("aria-label","Remove "+h+" from my usual times");
+    b.onclick=()=>{CONFIG.presets=CONFIG.presets.filter(t=>t!==h); saveEdit()}; pl.append(b)});
+  const w=$("eSlots"); w.innerHTML=""; const bk=CONFIG.booked[k]||[];
+  if(!hoursOf(date).length)w.innerHTML='<p class="note" style="grid-column:1/-1;text-align:left">No times yet. Pick a time above and tap Add.</p>';
+  hoursOf(date).forEach(h=>{const d=document.createElement("div"); d.style.cssText="display:flex;gap:4px;align-items:stretch";
+    const b=document.createElement("button"); b.className="slot x"; b.style.flex="1"; b.textContent=h; b.setAttribute("aria-pressed",bk.includes(h));
+    b.onclick=()=>{const a=CONFIG.booked[k]=CONFIG.booked[k]||[],i=a.indexOf(h); if(i<0)a.push(h);else a.splice(i,1); saveEdit()};
+    const r=document.createElement("button"); r.className="slot"; r.textContent="✕"; r.setAttribute("aria-label","Remove "+h); r.style.padding="14px 10px";
+    r.onclick=()=>{CONFIG.times[k]=(CONFIG.times[k]||[]).filter(t=>t!==h); CONFIG.booked[k]=(CONFIG.booked[k]||[]).filter(t=>t!==h); if(!CONFIG.times[k].length)delete CONFIG.times[k]; saveEdit()};
+    d.append(b,r); w.append(d)});
   if(!quiet)$("edit").scrollIntoView({behavior:"smooth",block:"start"});
 }
+$("pAll").onclick=()=>{if(!date)return; const k=key(date),a=CONFIG.times[k]=CONFIG.times[k]||[]; CONFIG.presets.forEach(h=>{if(!a.includes(h))a.push(h)}); saveEdit()};
+$("pTog").onclick=()=>{$("pBox").hidden=!$("pBox").hidden};
+$("pAdd").onclick=()=>{const v=$("pIn").value; if(!v)return; const t=to12(v); if(!CONFIG.presets.includes(t))CONFIG.presets.push(t); $("pIn").value=""; saveEdit()};
+$("tAdd").onclick=()=>{const v=$("tIn").value; if(!v||!date)return; const k=key(date),t=to12(v),a=CONFIG.times[k]=CONFIG.times[k]||[]; if(!a.includes(t))a.push(t); $("tIn").value=""; saveEdit()};
 $("eOff").onclick=()=>{CONFIG.offDays[key(date)]=$("eNote").value.trim()||"Jen isn't available on this day 💕";saveEdit()};
 $("eOn").onclick=()=>{delete CONFIG.offDays[key(date)];saveEdit()};
 $("copyJson").onclick=async()=>{$("json").select();try{await navigator.clipboard.writeText($("json").value);$("copyJson").textContent="Copied!"}catch(e){document.execCommand("copy")}};
 
 function loadLocal(){
   let saved=null; try{saved=JSON.parse(localStorage.getItem("nbj-schedule"))}catch(e){}
-  (saved?Promise.resolve(saved):fetch("availability.json?"+Date.now()).then(r=>r.json())).then(d=>{CONFIG.offDays=d.offDays||{};CONFIG.booked=d.booked||{}})
-    .catch(()=>{}).finally(()=>{drawCal();$("json").value=JSON.stringify({offDays:CONFIG.offDays,booked:CONFIG.booked},null,2)});
+  (saved?Promise.resolve(saved):fetch("availability.json?"+Date.now()).then(r=>r.json())).then(d=>{CONFIG.offDays=d.offDays||{};CONFIG.times=d.times||{};if(d.presets)CONFIG.presets=d.presets;CONFIG.booked=d.booked||{}})
+    .catch(()=>{}).finally(()=>{drawCal();$("json").value=JSON.stringify({offDays:CONFIG.offDays,presets:CONFIG.presets,times:CONFIG.times,booked:CONFIG.booked},null,2)});
 }
 if(SYNC){
   firebase.initializeApp(FIREBASE); DB=firebase.firestore(); AUTH=firebase.auth();
   const ref=DB.collection("schedule").doc("main");
   document.querySelector("#edit details").hidden=true;
-  ref.onSnapshot(snap=>{const d=snap.exists?snap.data():{}; CONFIG.offDays=d.offDays||{}; CONFIG.booked=d.booked||{};
+  ref.onSnapshot(snap=>{const d=snap.exists?snap.data():{}; CONFIG.offDays=d.offDays||{}; CONFIG.times=d.times||{}; if(d.presets)CONFIG.presets=d.presets; CONFIG.booked=d.booked||{};
     drawCal(); if(OWNER&&SIGNED&&date)openEdit(true)},()=>{drawCal()});
   AUTH.onAuthStateChanged(u=>{SIGNED=!!u; $("login").hidden=SIGNED||!OWNER; if(!u)$("eDay").hidden=true;
-    if(u)ref.get().then(x=>{if(!x.exists){try{const l=JSON.parse(localStorage.getItem("nbj-schedule")); if(l)ref.set({offDays:l.offDays||{},booked:l.booked||{}})}catch(e){}}}).catch(()=>{})});
+    if(u)ref.get().then(x=>{if(!x.exists){try{const l=JSON.parse(localStorage.getItem("nbj-schedule")); if(l)ref.set({offDays:l.offDays||{},presets:l.presets||CONFIG.presets,times:l.times||{},booked:l.booked||{}})}catch(e){}}}).catch(()=>{})});
   $("lGo").onclick=()=>{$("lErr").textContent=""; AUTH.signInWithEmailAndPassword($("lEmail").value.trim(),$("lPass").value).catch(()=>{$("lErr").textContent="Wrong email or password."})};
   drawCal();
 }else loadLocal();
