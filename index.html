@@ -179,8 +179,8 @@ textarea{min-height:84px;resize:vertical}
   <section id="owner" hidden>
     <h2>Share my availability</h2>
     <p style="font-weight:300;font-size:.95rem">Makes an image of your open times to post on Instagram.</p>
-    <label for="wkDate">Pick a date. The week (Mon to Sun) that has this date will be used.</label>
-    <input id="wkDate" type="date" style="margin-bottom:6px">
+    <label>Pick the dates to show (up to 7 days). Example: Nov 23 to Nov 27.</label>
+    <div style="display:flex;gap:10px;margin-bottom:6px"><div style="flex:1"><label for="wkFrom" style="margin-top:0">From</label><input id="wkFrom" type="date"></div><div style="flex:1"><label for="wkTo" style="margin-top:0">To</label><input id="wkTo" type="date"></div></div>
     <button class="cta" id="dlStory" style="margin-top:12px">Download for Story (1080×1920)</button>
     <button class="cta alt" id="dlPost">Download for Post (1080×1350)</button>
     <canvas id="prevCanvas" hidden></canvas>
@@ -304,28 +304,32 @@ function foot(x,W,y,dark,maxW){maxW=maxW||W-160;const u=CONFIG.site.replace(/^ht
   x.textAlign="center";let f=28;sp(x,3);do{x.font="500 "+f+"px Jost,Arial,sans-serif";f--}while(x.measureText(u).width>maxW&&f>12);
   x.fillStyle=dark;x.fillText(u,W/2,y);x.fillStyle=PK.deep;x.fillText(h,W/2,y+46);sp(x,0)}
 
-const wkDate=()=>{const v=$("wkDate").value;if(v){const[y,m,d]=v.split("-").map(Number);return new Date(y,m-1,d)}return new Date(today)};
-$("wkDate").value=key(today);
+const parseD=v=>{const[y,m,d]=v.split("-").map(Number);return new Date(y,m-1,d)};
+function wkRange(){const a=$("wkFrom").value?parseD($("wkFrom").value):new Date(today); let b=$("wkTo").value?parseD($("wkTo").value):new Date(a);
+  if(b<a)b=new Date(a); const mx=new Date(a); mx.setDate(mx.getDate()+6); if(b>mx)b=mx; return[a,b,Math.round((b-a)/864e5)+1]}
+$("wkFrom").value=key(today); const _t=new Date(today); _t.setDate(_t.getDate()+6); $("wkTo").value=key(_t);
+$("wkFrom").onchange=()=>{const a=parseD($("wkFrom").value||key(today)),mx=new Date(a);mx.setDate(mx.getDate()+6);
+  if(!$("wkTo").value||parseD($("wkTo").value)<a||parseD($("wkTo").value)>mx)$("wkTo").value=key(mx)};
 async function makeCard(W,H,maxDays){
   await loadFonts(); const c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d"); pinkBg(x,W,H);
-  const tall=H>1500, base=wkDate(), ws=new Date(base); ws.setDate(ws.getDate()-((base.getDay()+6)%7));
-  const we=new Date(ws); we.setDate(ws.getDate()+6); const mn=d=>d.toLocaleDateString("en",{month:"long"}).toUpperCase();
-  const lab=(mn(ws)===mn(we)?mn(ws)+" "+ws.getDate()+" – "+we.getDate():mn(ws).slice(0,3)+" "+ws.getDate()+" – "+mn(we).slice(0,3)+" "+we.getDate())+", "+we.getFullYear();
+  const tall=H>1500, [ws,we,N]=wkRange();
+  const mn=d=>d.toLocaleDateString("en",{month:"long"}).toUpperCase();
+  const lab=N===1?mn(ws).slice(0,3)+" "+ws.getDate()+", "+ws.getFullYear():(mn(ws)===mn(we)?mn(ws)+" "+ws.getDate()+" – "+we.getDate():mn(ws).slice(0,3)+" "+ws.getDate()+" – "+mn(we).slice(0,3)+" "+we.getDate())+", "+we.getFullYear();
   x.textAlign="center"; x.fillStyle=PK.deep; x.font="500 "+(tall?40:34)+"px Jost,Arial,sans-serif"; sp(x,12); x.fillText(CONFIG.studio.toUpperCase(),W/2,tall?135:105); sp(x,0);
   const fs=tall?28:24, ph2=tall?60:50, py2=tall?172:132; x.font="500 "+fs+"px Jost,Arial,sans-serif"; sp(x,4); const pw2=x.measureText(lab).width+90;
   x.fillStyle="#fffaf7"; x.beginPath(); x.roundRect(W/2-pw2/2,py2,pw2,ph2,ph2/2); x.fill(); x.strokeStyle=PK.mid; x.lineWidth=2; x.stroke(); x.fillStyle=PK.ink; x.fillText(lab,W/2+2,py2+ph2/2+fs*.35); sp(x,0);
   furText(x,"Available Slot",W/2,tall?425:308,tall?200:150,W-120);
   x.fillStyle=PK.deep; x.font="500 "+(tall?26:22)+"px Jost,Arial,sans-serif"; sp(x,6); x.fillText("LIMITED SLOTS  •  BOOK YOURS NOW",W/2,tall?505:352); sp(x,0);
-  const py=tall?545:385, ph=H-py-(tall?400:300), px=70, pw=W-140, rh=ph/7;
+  const py=tall?545:385, ph=H-py-(tall?400:300), px=70, pw=W-140, rh=ph/N;
   x.fillStyle="#fffaf7"; x.beginPath(); x.roundRect(px,py,pw,ph,44); x.fill(); x.strokeStyle="#e0869c"; x.lineWidth=2.5; x.beginPath(); x.roundRect(px+14,py+14,pw-28,ph-28,34); x.stroke();
-  for(let i=0;i<7;i++){const dt=new Date(ws); dt.setDate(ws.getDate()+i); const k=key(dt);
-    const y=py+i*rh, st=showTimes(dt), hrs=st.list, off=st.all, bk=CONFIG.booked[k]||[], mid=y+rh/2;
+  for(let i=0;i<N;i++){const dt=new Date(ws); dt.setDate(ws.getDate()+i); const k=key(dt);
+    const y=py+i*rh, hrs=hoursOf(dt), off=dt<today||!!offNote(dt), bk=CONFIG.booked[k]||[], mid=y+rh/2;
     x.textAlign="center"; x.fillStyle=PK.deep; x.font="500 "+(tall?36:30)+"px Jost,Arial,sans-serif"; sp(x,3);
     x.fillText(dt.toLocaleDateString("en",{weekday:"short"}).toUpperCase(),px+130,mid-4); x.font="400 "+(tall?34:28)+"px Jost,Arial,sans-serif"; sp(x,0);
     x.fillText(dt.getDate(),px+130,mid+(tall?40:34));
     x.strokeStyle=PK.soft; x.lineWidth=3; x.setLineDash([2,8]); x.beginPath(); x.moveTo(px+250,y+14); x.lineTo(px+250,y+rh-14); x.stroke(); x.setLineDash([]);
     x.textAlign="left"; const tx=px+300;
-    {x.fillStyle=PK.deep; x.font="500 "+(tall?32:28)+"px Jost,Arial,sans-serif"; sp(x,4); x.fillText(!off&&openSlots(dt).length?"AVAILABLE":"FULLY BOOKED",tx,mid-(tall?6:2)); sp(x,0);
+    if(hrs.length){x.fillStyle=PK.deep; x.font="500 "+(tall?32:28)+"px Jost,Arial,sans-serif"; sp(x,4); x.fillText(!off&&openSlots(dt).length?"AVAILABLE":"FULLY BOOKED",tx,mid-(tall?6:2)); sp(x,0);
       x.font="400 "+(tall?30:26)+"px Jost,Arial,sans-serif"; let cx=tx; const ty=mid+(tall?38:30);
       hrs.forEach(h=>{const t=shortT(h),w=x.measureText(t).width, b=off||bk.includes(h); heart(x,cx+9,ty-10,9,PK.mid); x.fillStyle=b?"rgba(74,16,48,.5)":PK.ink; x.fillText(t,cx+28,ty); if(b)scribble(x,cx+16,cx+34+w,ty-(tall?11:9),6); cx+=w+60})}
   }
