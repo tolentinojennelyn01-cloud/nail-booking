@@ -140,6 +140,10 @@ textarea{min-height:84px;resize:vertical}
     </div>
     <div class="grid" id="cal"></div>
     <p class="legend"><span><i class="lg open"></i>Available</span><span><i class="lg bk"></i>Has booking</span><span><i class="lg off"></i>Not available</span></p>
+    <div class="notes"><b>Notes</b>
+      <p>Appointment times are 3 hours apart.</p>
+      <p>To book, message Jen on Instagram with your preferred date and time. Your slot is confirmed once Jen replies.</p>
+      <p>Thank you!</p></div>
     <button class="cta alt" id="saveCal">Save calendar as picture</button>
   </section>
 
@@ -181,6 +185,11 @@ textarea{min-height:84px;resize:vertical}
   <!-- Only visible when the page address ends with ?owner -->
   <section id="owner" hidden>
     <h2>Share my availability</h2>
+    <p style="font-weight:300;font-size:.95rem">Makes an image of your open times to post on Instagram.</p>
+    <p class="note" style="text-align:left;margin:0 0 8px">Version: rose-gold calendar + Home Base / Home Service + app (Oct 28)</p>
+    <button class="cta alt" id="installApp" hidden style="margin:6px 0 10px">Install app</button>
+    <p class="note" style="text-align:left;margin:0 0 8px">Android: Chrome menu, then <b>Install app</b>. iPhone: Safari Share button, then <b>Add to Home Screen</b>. Computer: click the install icon at the right end of the address bar in Chrome or Edge.</p>
+    <label>Pick the dates to show (up to 7 days). Example: Nov 23 to Nov 27.</label>
     <div style="display:flex;gap:10px;margin-bottom:6px"><div style="flex:1"><label for="wkFrom" style="margin-top:0">From</label><input id="wkFrom" type="date"></div><div style="flex:1"><label for="wkTo" style="margin-top:0">To</label><input id="wkTo" type="date"></div></div>
     <button class="cta" id="dlStory" style="margin-top:12px">Download for Story (1080×1920)</button>
     <button class="cta alt" id="dlPost">Download for Post (1080×1350)</button>
@@ -534,6 +543,7 @@ function loadLocal(){
 }
 if(SYNC){
   firebase.initializeApp(FIREBASE); DB=firebase.firestore(); AUTH=firebase.auth();
+  try{DB.enablePersistence({synchronizeTabs:true}).catch(()=>{})}catch(e){}   /* keeps the last calendar on the phone so it opens offline, and sends edits made offline once you are back online */
   const ref=DB.collection("schedule").doc("main");
   document.querySelector("#edit details").hidden=true;
   ref.onSnapshot(snap=>{const d=snap.exists?snap.data():{}; CONFIG.offDays=d.offDays||{}; CONFIG.times=d.times||{}; if(d.presets)CONFIG.presets=d.presets; CONFIG.booked=d.booked||{};
