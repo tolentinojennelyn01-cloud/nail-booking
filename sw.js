@@ -1,7 +1,7 @@
 /* Nails by Jen – service worker. Keeps the app opening fast and working offline.
    Change the version number below whenever you upload a new index.html, so the phone picks it up. */
-const VERSION = "nbj-v1";
-const SHELL = ["./", "./index.html", "./manifest.json", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png"];
+const VERSION = "nbj-v2";
+const SHELL = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 const LIBS = ["fonts.googleapis.com", "fonts.gstatic.com"];
 
 self.addEventListener("install", e => {
