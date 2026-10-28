@@ -3,7 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#fbe6ea">
+<meta name="theme-color" content="#c22e51">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Jen Bookings">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Book Nails by Jen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,500;1,500&family=Great+Vibes&family=Jost:wght@300;400;500&family=Fredoka:wght@600;700&family=Alex+Brush&display=swap" rel="stylesheet">
@@ -179,7 +186,9 @@ textarea{min-height:84px;resize:vertical}
   <section id="owner" hidden>
     <h2>Share my availability</h2>
     <p style="font-weight:300;font-size:.95rem">Makes an image of your open times to post on Instagram.</p>
-    <p class="note" style="text-align:left;margin:0 0 8px">Version: rose-gold calendar + Home Base / Home Service (Oct 26)</p>
+    <p class="note" style="text-align:left;margin:0 0 8px">Version: rose-gold calendar + Home Base / Home Service + app (Oct 28)</p>
+    <button class="cta alt" id="installApp" hidden style="margin:6px 0 10px">Install app on this phone</button>
+    <p class="note" style="text-align:left;margin:0 0 8px">Android: Chrome menu, then <b>Install app</b>. iPhone: Safari Share button, then <b>Add to Home Screen</b>.</p>
     <label>Pick the dates to show (up to 7 days). Example: Nov 23 to Nov 27.</label>
     <div style="display:flex;gap:10px;margin-bottom:6px"><div style="flex:1"><label for="wkFrom" style="margin-top:0">From</label><input id="wkFrom" type="date"></div><div style="flex:1"><label for="wkTo" style="margin-top:0">To</label><input id="wkTo" type="date"></div></div>
     <button class="cta" id="dlStory" style="margin-top:12px">Download for Story (1080×1920)</button>
@@ -543,6 +552,13 @@ if(SYNC){
   $("lGo").onclick=()=>{$("lErr").textContent=""; AUTH.signInWithEmailAndPassword($("lEmail").value.trim(),$("lPass").value).catch(()=>{$("lErr").textContent="Wrong email or password."})};
   drawCal();
 }else loadLocal();
+
+/* ---------- Install as an app ---------- */
+let installEv=null;
+addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEv=e;$("installApp").hidden=false});
+addEventListener("appinstalled",()=>{$("installApp").hidden=true});
+$("installApp").onclick=async()=>{if(!installEv)return;installEv.prompt();try{await installEv.userChoice}catch(e){}installEv=null;$("installApp").hidden=true};
+if("serviceWorker" in navigator&&/^https?:/.test(location.protocol))addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})});
 </script>
 </body>
 </html>
